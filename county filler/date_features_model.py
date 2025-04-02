@@ -2,6 +2,9 @@
 Enhanced model evaluation script with date-based feature engineering
 This script will run regression models with additional time-based features,
 improved imputation of missing values, and optimized feature interactions.
+
+NOTE: This script uses the filled_data.xlsx file, which is created by the 
+fill_counties.py script. Run fill_counties.py first.
 """
 
 import pandas as pd
@@ -24,163 +27,7 @@ import seaborn as sns
 current_dir = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(current_dir, 'filled_data.xlsx')
 OUTPUT_FILE = os.path.join(current_dir, 'optimized_features_results.txt')
-ENHANCED_DATA_PATH = os.path.join(current_dir, 'enhanced_filled_data.xlsx')
 FEATURE_IMPORTANCE_PATH = os.path.join(current_dir, 'feature_importance.png')
-
-def fill_missing_geographic_data(df):
-    """Fill missing values using Census Block Group relationships"""
-    with open(OUTPUT_FILE, 'a') as f:
-        f.write("Performing geographic data imputation:\n")
-        
-        # Track initial missing counts
-        initial_missing = {
-            'Big County': df['Big County'].isna().sum(),
-            'Big Race/Ethnicity': df['Big Race/Ethnicity'].isna().sum(),
-            'Little Participant: Race/Ethnicity': df['Little Participant: Race/Ethnicity'].isna().sum()
-        }
-        
-        # Map Census Block Groups to counties where known
-        block_to_county = {}
-        for idx, row in df.dropna(subset=['Big County', 'Big Home Census Block Group']).iterrows():
-            block_to_county[row['Big Home Census Block Group']] = row['Big County']
-        
-        # Fill missing counties using the mapping
-        county_mask = df['Big County'].isna() & df['Big Home Census Block Group'].notna()
-        df.loc[county_mask, 'Big County'] = df.loc[county_mask, 'Big Home Census Block Group'].map(block_to_county)
-        
-        # Map Census Block Groups to race/ethnicity where known
-        block_to_race = {}
-        for idx, row in df.dropna(subset=['Big Race/Ethnicity', 'Big Home Census Block Group']).iterrows():
-            block_to_race[row['Big Home Census Block Group']] = row['Big Race/Ethnicity']
-        
-        # Fill missing race/ethnicity using the mapping (only if we have high confidence)
-        race_counts = {}
-        for block, races in block_to_race.items():
-            if block not in race_counts:
-                race_counts[block] = {}
-            if races in race_counts[block]:
-                race_counts[block][races] += 1
-            else:
-                race_counts[block][races] = 1
-        
-        # Only use blocks where we have a dominant race pattern
-        reliable_block_to_race = {}
-        for block, counts in race_counts.items():
-            if len(counts) > 0:
-                dominant_race = max(counts.items(), key=lambda x: x[1])[0]
-                dominant_count = counts[dominant_race]
-                total = sum(counts.values())
-                if dominant_count / total > 0.7 and total >= 3:  # 70% threshold and at least 3 samples
-                    reliable_block_to_race[block] = dominant_race
-        
-        # Apply the reliable mapping
-        race_mask = df['Big Race/Ethnicity'].isna() & df['Big Home Census Block Group'].notna()
-        df.loc[race_mask, 'Big Race/Ethnicity'] = df.loc[race_mask, 'Big Home Census Block Group'].map(reliable_block_to_race)
-        
-        # Apply similar logic for Little's race/ethnicity using Little's Census Block Group
-        little_block_to_race = {}
-        for idx, row in df.dropna(subset=['Little Participant: Race/Ethnicity', 'Little Mailing Address Census Block Group']).iterrows():
-            little_block_to_race[row['Little Mailing Address Census Block Group']] = row['Little Participant: Race/Ethnicity']
-        
-        # Same reliability filtering as above
-        race_counts = {}
-        for block, races in little_block_to_race.items():
-            if block not in race_counts:
-                race_counts[block] = {}
-            if races in race_counts[block]:
-                race_counts[block][races] += 1
-            else:
-                race_counts[block][races] = 1
-        
-        reliable_little_block_to_race = {}
-        for block, counts in race_counts.items():
-            if len(counts) > 0:
-                dominant_race = max(counts.items(), key=lambda x: x[1])[0]
-                dominant_count = counts[dominant_race]
-                total = sum(counts.values())
-                if dominant_count / total > 0.7 and total >= 3:
-                    reliable_little_block_to_race[block] = dominant_race
-        
-        little_race_mask = df['Little Participant: Race/Ethnicity'].isna() & df['Little Mailing Address Census Block Group'].notna()
-        df.loc[little_race_mask, 'Little Participant: Race/Ethnicity'] = df.loc[little_race_mask, 'Little Mailing Address Census Block Group'].map(reliable_little_block_to_race)
-        
-        # Track improvements
-        final_missing = {
-            'Big County': df['Big County'].isna().sum(),
-            'Big Race/Ethnicity': df['Big Race/Ethnicity'].isna().sum(),
-            'Little Participant: Race/Ethnicity': df['Little Participant: Race/Ethnicity'].isna().sum()
-        }
-        
-        # Report improvements
-        for col in initial_missing:
-            filled = initial_missing[col] - final_missing[col]
-            if filled > 0:
-                pct_improved = (filled / initial_missing[col]) * 100
-                f.write(f"  - {col}: Filled {filled} missing values ({pct_improved:.1f}% improvement)\n")
-            else:
-                f.write(f"  - {col}: No improvement\n")
-                
-        f.write("\n")
-    
-    return df
-
-def fill_missing_occupation_data(df):
-    """Fill missing occupation data using employer and education correlations"""
-    with open(OUTPUT_FILE, 'a') as f:
-        f.write("Performing occupation data imputation:\n")
-        
-        initial_missing = {
-            'Big Occupation': df['Big Occupation'].isna().sum(),
-            'Big Level of Education': df['Big Level of Education'].isna().sum(),
-        }
-        
-        # Map employer to most common occupation
-        employer_to_occupation = {}
-        for employer, group in df.dropna(subset=['Big Employer', 'Big Occupation']).groupby('Big Employer'):
-            if len(group) >= 3:  # Only consider employers with at least 3 records
-                occupation_counts = group['Big Occupation'].value_counts()
-                if not occupation_counts.empty:
-                    employer_to_occupation[employer] = occupation_counts.index[0]
-        
-        # Fill missing occupations using employer mapping
-        occupation_mask = df['Big Occupation'].isna() & df['Big Employer'].notna()
-        occupation_before = df['Big Occupation'].isna().sum()
-        df.loc[occupation_mask, 'Big Occupation'] = df.loc[occupation_mask, 'Big Employer'].map(employer_to_occupation)
-        occupation_after = df['Big Occupation'].isna().sum()
-        
-        # Fill missing education levels based on occupation
-        occupation_to_education = {}
-        for occupation, group in df.dropna(subset=['Big Occupation', 'Big Level of Education']).groupby('Big Occupation'):
-            if len(group) >= 3:  # Only consider occupations with at least 3 records
-                education_counts = group['Big Level of Education'].value_counts()
-                if not education_counts.empty:
-                    occupation_to_education[occupation] = education_counts.index[0]
-        
-        # Apply education mapping
-        education_mask = df['Big Level of Education'].isna() & df['Big Occupation'].notna()
-        education_before = df['Big Level of Education'].isna().sum()
-        df.loc[education_mask, 'Big Level of Education'] = df.loc[education_mask, 'Big Occupation'].map(occupation_to_education)
-        education_after = df['Big Level of Education'].isna().sum()
-        
-        # Report improvements
-        occupation_filled = occupation_before - occupation_after
-        education_filled = education_before - education_after
-        
-        if occupation_filled > 0:
-            pct_improved = (occupation_filled / initial_missing['Big Occupation']) * 100
-            f.write(f"  - Big Occupation: Filled {occupation_filled} missing values ({pct_improved:.1f}% improvement)\n")
-        else:
-            f.write(f"  - Big Occupation: No improvement\n")
-            
-        if education_filled > 0:
-            pct_improved = (education_filled / initial_missing['Big Level of Education']) * 100
-            f.write(f"  - Big Level of Education: Filled {education_filled} missing values ({pct_improved:.1f}% improvement)\n")
-        else:
-            f.write(f"  - Big Level of Education: No improvement\n")
-            
-        f.write("\n")
-            
-    return df
 
 def create_date_features(df):
     """Create time-based features from date columns"""
@@ -403,11 +250,11 @@ with open(OUTPUT_FILE, 'w') as f:
     f.write("Match Length Prediction Model with Optimized Feature Engineering\n")
     f.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     f.write("="*80 + "\n\n")
-    f.write(f"Reading data from: {ENHANCED_DATA_PATH}\n\n")
+    f.write(f"Reading data from: {DATA_PATH}\n\n")
 
-# Load the enhanced dataset
+# Load the dataset
 try:
-    df = pd.read_excel(ENHANCED_DATA_PATH)
+    df = pd.read_excel(DATA_PATH)
     with open(OUTPUT_FILE, 'a') as f:
         f.write(f"Data loaded successfully. Shape: {df.shape}\n\n")
         f.write("Data Overview:\n")
@@ -415,20 +262,17 @@ try:
         f.write(f"Total columns: {df.shape[1]}\n\n")
 except Exception as e:
     with open(OUTPUT_FILE, 'a') as f:
-        f.write(f"Error loading enhanced data, falling back to original: {str(e)}\n")
-    try:
-        df = pd.read_excel(DATA_PATH)
-        df = fill_missing_geographic_data(df)
-        df = fill_missing_occupation_data(df)
-    except Exception as e:
-        with open(OUTPUT_FILE, 'a') as f:
-            f.write(f"Error loading data: {str(e)}\n")
-        exit(1)
+        f.write(f"Error loading data: {str(e)}\n")
+        f.write(f"Please run fill_counties.py first to generate the filled_data.xlsx file\n")
+    print(f"Error: {str(e)}")
+    print("Please run fill_counties.py first to generate the filled_data.xlsx file")
+    exit(1)
 
 # Check if 'Match Length' exists in the dataframe
 if 'Match Length' not in df.columns:
     with open(OUTPUT_FILE, 'a') as f:
         f.write("Error: 'Match Length' column not found in the dataset\n")
+    print("Error: 'Match Length' column not found in the dataset")
     exit(1)
 
 # Data preprocessing

@@ -1,18 +1,14 @@
 Match Length Prediction Model with Optimized Feature Engineering
-Date: 2025-04-01 20:39:03
+Date: 2025-04-02 12:54:09
 ================================================================================
 
-Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\county filler\enhanced_filled_data.xlsx
+Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\county filler\filled_data.xlsx
 
-Error loading enhanced data, falling back to original: [Errno 2] No such file or directory: 'C:\\Users\\solo\\Desktop\\Repos\\MinMUDAC2025\\county filler\\enhanced_filled_data.xlsx'
-Performing geographic data imputation:
-  - Big County: No improvement
-  - Big Race/Ethnicity: No improvement
-  - Little Participant: Race/Ethnicity: No improvement
+Data loaded successfully. Shape: (3275, 66)
 
-Performing occupation data imputation:
-  - Big Occupation: Filled 13 missing values (4.0% improvement)
-  - Big Level of Education: Filled 1953 missing values (69.1% improvement)
+Data Overview:
+Total rows: 3275
+Total columns: 66
 
 Data Preprocessing:
 Target variable: Match Length
@@ -68,13 +64,13 @@ Performing optimized feature selection:
     1. length_3yr_plus: 0.706795
     2. length_1yr: 0.104720
     3. length_2_3yr: 0.031075
-    4. years_since_x_big_age: 0.019933
-    5. years_since_match: 0.011780
-    6. log_years_since_match: 0.010784
-    7. closed_x_match_year: 0.010186
-    8. match_year: 0.010139
-    9. Stage_Closed: 0.009420
-    10. length_1_2yr: 0.006701
+    4. years_since_x_big_age: 0.020022
+    5. log_years_since_match: 0.011860
+    6. years_since_match: 0.011616
+    7. closed_x_match_year: 0.011030
+    8. match_year: 0.009379
+    9. Stage_Closed: 0.007806
+    10. closed_x_years_since: 0.007047
   - Feature importance plot saved to: C:\Users\solo\Desktop\Repos\MinMUDAC2025\county filler\feature_importance.png
 
 Total features after selection: 12
