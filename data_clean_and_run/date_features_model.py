@@ -9,7 +9,7 @@ fill_counties.py script. Run fill_counties.py first.
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, PolynomialFeatures
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -46,124 +46,159 @@ def create_date_features(df):
     
     for col in date_columns:
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col])
+            df[col] = pd.to_datetime(df[col], errors='coerce')
     
     # Create time-based features
     features = pd.DataFrame()
     
-    # Time to match features
+    # Early Stage Process Features
+    if all(col in df.columns for col in ['Little Application Received', 'Little Interview Date']):
+        features['days_application_to_interview'] = (df['Little Interview Date'] - df['Little Application Received']).dt.days
+        features['days_application_to_interview'] = features['days_application_to_interview'].clip(lower=0)
+        features['log_days_application_to_interview'] = np.log1p(features['days_application_to_interview'])
+        
+        # Add process pace indicators
+        features['is_fast_application_process'] = (features['days_application_to_interview'] < 30).astype(int)
+        features['is_slow_application_process'] = (features['days_application_to_interview'] > 90).astype(int)
+        
+        # Add seasonal application process features
+        if 'Match Activation Date' in df.columns:
+            features['application_month'] = df['Little Application Received'].dt.month
+            features['is_summer_application'] = features['application_month'].isin([6, 7, 8]).astype(int)
+            features['is_school_year_application'] = (~features['is_summer_application']).astype(int)
+    
+    # Big Process Features
+    if all(col in df.columns for col in ['Big Contact: Created Date', 'Big Interview Date']):
+        features['days_contact_to_interview'] = (df['Big Interview Date'] - df['Big Contact: Created Date']).dt.days
+        features['days_contact_to_interview'] = features['days_contact_to_interview'].clip(lower=0)
+        features['log_days_contact_to_interview'] = np.log1p(features['days_contact_to_interview'])
+        
+        # Add process pace indicators for Big
+        features['is_fast_big_process'] = (features['days_contact_to_interview'] < 30).astype(int)
+        features['is_slow_big_process'] = (features['days_contact_to_interview'] > 90).astype(int)
+    
+    # Combined Process Features
+    if all(col in features.columns for col in ['days_application_to_interview', 'days_contact_to_interview']):
+        features['process_speed_ratio'] = (features['days_application_to_interview'] / 
+                                         features['days_contact_to_interview'].replace(0, 1)).clip(0, 10)
+        features['process_speed_difference'] = (features['days_application_to_interview'] - 
+                                              features['days_contact_to_interview']).clip(-90, 90)
+        features['is_synchronized_process'] = (abs(features['process_speed_difference']) < 30).astype(int)
+    
+    # Time to match features (existing)
     if all(col in df.columns for col in ['Big Approved Date', 'Match Activation Date']):
         features['days_approval_to_match'] = (df['Match Activation Date'] - df['Big Approved Date']).dt.days
+        features['days_approval_to_match'] = features['days_approval_to_match'].clip(lower=0)
+        features['log_days_approval_to_match'] = np.log1p(features['days_approval_to_match'])
     
     if all(col in df.columns for col in ['Big Acceptance Date', 'Match Activation Date']):
         features['days_acceptance_to_match'] = (df['Match Activation Date'] - df['Big Acceptance Date']).dt.days
+        features['days_acceptance_to_match'] = features['days_acceptance_to_match'].clip(lower=0)
+        features['log_days_acceptance_to_match'] = np.log1p(features['days_acceptance_to_match'])
     
-    # Age features
+    # Age features (existing)
     if all(col in df.columns for col in ['Big Birthdate', 'Little Birthdate']):
         features['big_age'] = (datetime.now() - df['Big Birthdate']).dt.days / 365.25
         features['little_age'] = (datetime.now() - df['Little Birthdate']).dt.days / 365.25
+        
+        # Clip ages to reasonable ranges
+        features['big_age'] = features['big_age'].clip(lower=18, upper=100)
+        features['little_age'] = features['little_age'].clip(lower=5, upper=21)
+        
         features['age_difference'] = features['big_age'] - features['little_age']
         
-        # Add age interaction features
-        features['age_ratio'] = features['big_age'] / features['little_age']
-        features['age_product'] = features['big_age'] * features['little_age'] / 100  # Scaled down to avoid large numbers
+        # Add age interaction features with safety checks
+        features['age_ratio'] = (features['big_age'] / features['little_age']).clip(lower=1, upper=10)
+        features['age_product'] = (features['big_age'] * features['little_age'] / 100).clip(upper=1000)
         
-        # Add squared terms
-        features['big_age_squared'] = features['big_age'] ** 2
-        features['little_age_squared'] = features['little_age'] ** 2
-        features['age_difference_squared'] = features['age_difference'] ** 2
+        # Add squared terms with scaling to prevent overflow
+        features['big_age_squared'] = (features['big_age'] ** 2) / 100
+        features['little_age_squared'] = (features['little_age'] ** 2) / 100
+        features['age_difference_squared'] = (features['age_difference'] ** 2) / 100
         
-        # Add age cubic terms (helps capture more complex relationships)
-        features['big_age_cubed'] = features['big_age'] ** 3 / 1000  # Scale down
+        # Add scaled polynomial features
+        features['big_age_cubed'] = (features['big_age'] ** 3) / 10000
+        features['little_age_cubed'] = (features['little_age'] ** 3) / 10000
+        features['age_diff_cubed'] = (features['age_difference'] ** 3) / 10000
+        features['age_ratio_squared'] = (features['age_ratio'] ** 2).clip(upper=100)
         
-        # NEW: Add more polynomial age features
-        features['little_age_cubed'] = features['little_age'] ** 3 / 1000  # Scale down
-        features['age_diff_cubed'] = features['age_difference'] ** 3 / 1000  # Scale down
-        features['age_ratio_squared'] = features['age_ratio'] ** 2
-        
-        # NEW: Add logarithmic transformations of age features
+        # Add logarithmic transformations of age features
         features['log_big_age'] = np.log1p(features['big_age'])
         features['log_little_age'] = np.log1p(features['little_age'])
         features['log_age_diff'] = np.log1p(abs(features['age_difference']))
     
-    # Process time features
+    # Process time features (existing)
     if all(col in df.columns for col in ['Big Interview Date', 'Big Acceptance Date']):
         features['days_interview_to_acceptance'] = (df['Big Acceptance Date'] - df['Big Interview Date']).dt.days
+        features['days_interview_to_acceptance'] = features['days_interview_to_acceptance'].clip(lower=0)
+        features['log_days_interview_to_acceptance'] = np.log1p(features['days_interview_to_acceptance'])
     
-    # NEW: Add more time sequence features
+    # Add more time sequence features with validation
     if all(col in df.columns for col in ['Little Application Received', 'Match Activation Date']):
         features['days_application_to_match'] = (df['Match Activation Date'] - df['Little Application Received']).dt.days
+        features['days_application_to_match'] = features['days_application_to_match'].clip(lower=0)
         features['log_days_application_to_match'] = np.log1p(features['days_application_to_match'])
+        
+        # Add process efficiency indicators
+        if 'days_application_to_interview' in features.columns:
+            features['interview_to_match_ratio'] = (features['days_application_to_match'] / 
+                                                  features['days_application_to_interview'].replace(0, 1)).clip(0, 10)
+            features['is_efficient_process'] = (features['interview_to_match_ratio'] < 2).astype(int)
     
     if all(col in df.columns for col in ['Little Interview Date', 'Match Activation Date']):
         features['days_interview_to_match'] = (df['Match Activation Date'] - df['Little Interview Date']).dt.days
+        features['days_interview_to_match'] = features['days_interview_to_match'].clip(lower=0)
+        features['log_days_interview_to_match'] = np.log1p(features['days_interview_to_match'])
     
     if all(col in df.columns for col in ['Little Acceptance Date', 'Match Activation Date']):
         features['days_little_acceptance_to_match'] = (df['Match Activation Date'] - df['Little Acceptance Date']).dt.days
+        features['days_little_acceptance_to_match'] = features['days_little_acceptance_to_match'].clip(lower=0)
+        features['log_days_little_acceptance_to_match'] = np.log1p(features['days_little_acceptance_to_match'])
     
-    # NEW: Add time sequence ratios (relative pace of progress)
+    # Add time sequence ratios with safety checks
     if all(col in features.columns for col in ['days_acceptance_to_match', 'days_interview_to_acceptance']):
-        # Avoid division by zero
-        features['interview_acceptance_match_ratio'] = features['days_acceptance_to_match'] / features['days_interview_to_acceptance'].replace(0, 1)
+        denominator = features['days_interview_to_acceptance'].replace(0, 1)
+        features['interview_acceptance_match_ratio'] = (features['days_acceptance_to_match'] / denominator).clip(0, 10)
     
-    # Seasonality features
+    # Seasonality features (existing)
     if 'Match Activation Date' in df.columns:
         features['match_month'] = df['Match Activation Date'].dt.month
         features['match_quarter'] = df['Match Activation Date'].dt.quarter
         features['match_year'] = df['Match Activation Date'].dt.year
         features['match_day_of_week'] = df['Match Activation Date'].dt.dayofweek
         
-        # Add cyclical month encoding (better captures seasons)
+        # Add cyclical encodings (these are already bounded by sin/cos)
         features['month_sin'] = np.sin(2 * np.pi * features['match_month']/12)
         features['month_cos'] = np.cos(2 * np.pi * features['match_month']/12)
-        
-        # Quarter encoding
         features['quarter_sin'] = np.sin(2 * np.pi * features['match_quarter']/4)
         features['quarter_cos'] = np.cos(2 * np.pi * features['match_quarter']/4)
-        
-        # NEW: Add day of week cyclical encoding
         features['day_of_week_sin'] = np.sin(2 * np.pi * features['match_day_of_week']/7)
         features['day_of_week_cos'] = np.cos(2 * np.pi * features['match_day_of_week']/7)
         
-        # Add year interaction features
+        # Add year features with reasonable bounds
         current_year = datetime.now().year
-        features['years_since_match'] = current_year - features['match_year']
+        features['years_since_match'] = (current_year - features['match_year']).clip(0, 20)
         features['log_years_since_match'] = np.log1p(features['years_since_match'])
         
-        # Season indicators
+        # Binary seasonal indicators (these are already 0/1)
         features['is_summer'] = features['match_month'].isin([6, 7, 8]).astype(int)
         features['is_winter'] = features['match_month'].isin([12, 1, 2]).astype(int)
         features['is_spring'] = features['match_month'].isin([3, 4, 5]).astype(int)
         features['is_fall'] = features['match_month'].isin([9, 10, 11]).astype(int)
         features['is_school_year'] = (~features['is_summer']).astype(int)
-        
-        # School year transitions
         features['is_school_start'] = features['match_month'].isin([8, 9]).astype(int)
         features['is_school_end'] = features['match_month'].isin([5, 6]).astype(int)
-        
-        # NEW: Is weekend feature 
         features['is_weekend'] = features['match_day_of_week'].isin([5, 6]).astype(int)
         
-        # NEW: Match year squared (to capture non-linear time trends)
-        features['match_year_centered'] = features['match_year'] - 2020  # Center around a reasonable year
-        features['match_year_squared'] = features['match_year_centered'] ** 2
+        # Year-based features with scaling
+        features['match_year_centered'] = (features['match_year'] - 2020)  # Center around a reasonable year
+        features['match_year_squared'] = (features['match_year_centered'] ** 2) / 100  # Scale down
     
-    # Duration buckets (helps capture non-linear patterns in match length)
-    if 'Match Length' in df.columns:
-        # Create buckets by year
-        features['length_1yr'] = (df['Match Length'] <= 12).astype(int)
-        features['length_1_2yr'] = ((df['Match Length'] > 12) & (df['Match Length'] <= 24)).astype(int)
-        features['length_2_3yr'] = ((df['Match Length'] > 24) & (df['Match Length'] <= 36)).astype(int)
-        features['length_3yr_plus'] = (df['Match Length'] > 36).astype(int)
-        
-        # NEW: Create more granular duration buckets
-        features['length_0_6mo'] = (df['Match Length'] <= 6).astype(int)
-        features['length_6mo_1yr'] = ((df['Match Length'] > 6) & (df['Match Length'] <= 12)).astype(int)
-        features['length_3yr_5yr'] = ((df['Match Length'] > 36) & (df['Match Length'] <= 60)).astype(int)
-        features['length_5yr_plus'] = (df['Match Length'] > 60).astype(int)
+    # Replace any remaining infinities with NaN
+    features = features.replace([np.inf, -np.inf], np.nan)
     
-    # Handle missing values in new features
-    features = features.fillna(features.mean())
+    # Handle missing values - use median for numeric features
+    features = features.fillna(features.median())
     
     return features
 
@@ -177,68 +212,60 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
         date_features
     ], axis=1)
     
-    # Get top categories by frequency to avoid creating too many sparse features
+    # Get top categories by frequency
     top_counties = df['Big County'].value_counts().nlargest(5).index.tolist() if 'Big County' in df.columns else []
     
-    # 1. Gender match interactions
+    # 1. Gender match interactions (already binary)
     if all(col in df.columns for col in ['Big Gender', 'Little Gender']):
         interactions['gender_match'] = (df['Big Gender'] == df['Little Gender']).astype(int)
         
-        # Add gender match interaction with age
         if 'big_age' in date_features.columns:
-            interactions['gender_match_x_big_age'] = interactions['gender_match'] * date_features['big_age']
-            interactions['gender_match_x_age_difference'] = interactions['gender_match'] * date_features['age_difference']
-            
-            # NEW: Gender match with more complex age features
-            interactions['gender_match_x_age_product'] = interactions['gender_match'] * date_features['age_product']
-            interactions['gender_match_x_age_ratio'] = interactions['gender_match'] * date_features['age_ratio']
+            # Scale interactions to prevent overflow
+            interactions['gender_match_x_big_age'] = (interactions['gender_match'] * date_features['big_age']).clip(0, 100)
+            interactions['gender_match_x_age_difference'] = (interactions['gender_match'] * date_features['age_difference']).clip(-50, 50)
+            interactions['gender_match_x_age_product'] = (interactions['gender_match'] * date_features['age_product']).clip(0, 1000)
+            interactions['gender_match_x_age_ratio'] = (interactions['gender_match'] * date_features['age_ratio']).clip(1, 10)
     
-    # 2. Program type interactions
+    # 2. Program type interactions (binary features)
     if 'Program Type' in df.columns:
-        # Community program is the most common
         interactions['is_community'] = (df['Program Type'] == 'Community').astype(int)
         
         if 'big_age' in date_features.columns:
-            interactions['community_x_big_age'] = interactions['is_community'] * date_features['big_age']
-            # NEW: Add more program type interactions
-            interactions['community_x_age_difference'] = interactions['is_community'] * date_features['age_difference']
-            interactions['community_x_age_ratio'] = interactions['is_community'] * date_features['age_ratio']
+            interactions['community_x_big_age'] = (interactions['is_community'] * date_features['big_age']).clip(0, 100)
+            interactions['community_x_age_difference'] = (interactions['is_community'] * date_features['age_difference']).clip(-50, 50)
+            interactions['community_x_age_ratio'] = (interactions['is_community'] * date_features['age_ratio']).clip(1, 10)
         
+        # Binary interactions don't need clipping
         if 'is_summer' in date_features.columns:
             interactions['community_x_summer'] = interactions['is_community'] * date_features['is_summer']
             interactions['community_x_school_year'] = interactions['is_community'] * date_features['is_school_year']
             
-            # NEW: Add more seasonal interactions with program type
             if 'is_winter' in date_features.columns:
                 interactions['community_x_winter'] = interactions['is_community'] * date_features['is_winter']
             if 'is_school_start' in date_features.columns:
                 interactions['community_x_school_start'] = interactions['is_community'] * date_features['is_school_start']
                 interactions['community_x_school_end'] = interactions['is_community'] * date_features['is_school_end']
     
-    # 3. County and geographic interactions
+    # 3. County interactions (binary features)
     for county in top_counties:
         if 'Big Age' in numeric_features:
             interactions[f'county_{county}'] = (df['Big County'] == county).astype(int)
-            interactions[f'county_{county}_x_big_age'] = interactions[f'county_{county}'] * df['Big Age']
+            interactions[f'county_{county}_x_big_age'] = (interactions[f'county_{county}'] * df['Big Age']).clip(0, 100)
         
         if 'is_summer' in date_features.columns:
             interactions[f'county_{county}_x_summer'] = interactions[f'county_{county}'] * date_features['is_summer']
             
-            # NEW: Add county interactions with school periods
             if 'is_school_start' in date_features.columns:
                 interactions[f'county_{county}_x_school_start'] = interactions[f'county_{county}'] * date_features['is_school_start']
     
-    # 4. Age difference threshold interactions 
+    # 4. Age difference threshold interactions (binary features)
     if 'age_difference' in date_features.columns:
         interactions['large_age_diff'] = (date_features['age_difference'] > 20).astype(int)
         interactions['medium_age_diff'] = ((date_features['age_difference'] >= 10) & 
                                           (date_features['age_difference'] <= 20)).astype(int)
-        
-        # NEW: Add more granular age difference thresholds
         interactions['small_age_diff'] = (date_features['age_difference'] < 10).astype(int)
         interactions['very_large_age_diff'] = (date_features['age_difference'] > 30).astype(int)
         
-        # NEW: Combine age difference with seasons
         if 'is_summer' in date_features.columns:
             interactions['large_age_diff_x_summer'] = interactions['large_age_diff'] * date_features['is_summer']
             interactions['large_age_diff_x_school_year'] = interactions['large_age_diff'] * date_features['is_school_year']
@@ -246,96 +273,15 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
     # 5. Year since match interactions
     if 'years_since_match' in date_features.columns:
         if 'Big Age' in numeric_features:
-            interactions['years_since_x_big_age'] = date_features['years_since_match'] * df['Big Age'] / 10
-            
-            # NEW: Add more years since match interactions
-            interactions['years_since_squared'] = date_features['years_since_match'] ** 2
-            interactions['years_since_cubed'] = date_features['years_since_match'] ** 3
-            
-        # NEW: Add years since match with program type
-        if 'Program Type' in df.columns:
-            for program in df['Program Type'].unique():
-                if len(df[df['Program Type'] == program]) > 50:  # Only for common programs
-                    is_program = (df['Program Type'] == program).astype(int)
-                    interactions[f'{program}_x_years_since'] = is_program * date_features['years_since_match']
+            interactions['years_since_x_big_age'] = (date_features['years_since_match'] * df['Big Age'] / 10).clip(0, 100)
+            interactions['years_since_squared'] = (date_features['years_since_match'] ** 2 / 100).clip(0, 100)
+            interactions['years_since_cubed'] = (date_features['years_since_match'] ** 3 / 1000).clip(0, 100)
     
-    # 6. Match month and program type interactions
-    if 'match_month' in date_features.columns and 'Program Type' in df.columns:
-        for program in df['Program Type'].unique():
-            if len(df[df['Program Type'] == program]) > 50:  # Only for common programs
-                is_program = (df['Program Type'] == program).astype(int)
-                interactions[f'{program}_summer'] = is_program * date_features['is_summer']
-                interactions[f'{program}_school_start'] = is_program * date_features['is_school_start']
-                
-                # NEW: Add quarter interactions with program type
-                if 'match_quarter' in date_features.columns:
-                    for quarter in range(1, 5):
-                        is_quarter = (date_features['match_quarter'] == quarter).astype(int)
-                        interactions[f'{program}_q{quarter}'] = is_program * is_quarter
+    # Replace any remaining infinities with NaN
+    interactions = interactions.replace([np.inf, -np.inf], np.nan)
     
-    # 7. Special closure reason features
-    if 'Closure Reason' in df.columns:
-        # Focus on key reasons that appeared in feature importance
-        key_reasons = ['Child: Graduated', 'Successful match closure', 
-                      'Child/Family: Lost contact with agency']
-        
-        for reason in key_reasons:
-            if reason in df['Closure Reason'].unique():
-                interactions[f'closure_{reason}'] = (df['Closure Reason'] == reason).astype(int)
-                
-                # NEW: Add closure reason interactions with age
-                if 'big_age' in date_features.columns:
-                    interactions[f'closure_{reason}_x_big_age'] = interactions[f'closure_{reason}'] * date_features['big_age']
-                
-                # NEW: Add closure reason interactions with match year
-                if 'match_year' in date_features.columns:
-                    interactions[f'closure_{reason}_x_match_year'] = interactions[f'closure_{reason}'] * date_features['match_year']
-    
-    # 8. Stage and time interactions
-    if 'Stage' in df.columns and 'match_year' in date_features.columns:
-        interactions['closed_stage'] = (df['Stage'] == 'Closed').astype(int)
-        interactions['closed_x_match_year'] = interactions['closed_stage'] * date_features['match_year']
-        
-        if 'years_since_match' in date_features.columns:
-            interactions['closed_x_years_since'] = interactions['closed_stage'] * date_features['years_since_match']
-            
-            # NEW: Add more complex stage interactions
-            interactions['closed_x_years_since_squared'] = interactions['closed_stage'] * (date_features['years_since_match'] ** 2)
-            
-        # NEW: Add season interactions with stage
-        if 'is_summer' in date_features.columns:
-            interactions['closed_x_summer'] = interactions['closed_stage'] * date_features['is_summer']
-            interactions['closed_x_school_year'] = interactions['closed_stage'] * date_features['is_school_year']
-    
-    # NEW: 9. Add temporal pattern interactions
-    if all(col in date_features.columns for col in ['days_approval_to_match', 'days_acceptance_to_match']):
-        # Ratio of approval to acceptance times
-        ratio = date_features['days_approval_to_match'] / date_features['days_acceptance_to_match'].replace(0, 1)
-        interactions['approval_acceptance_ratio'] = ratio
-        
-        # Categorize the pace of match formation
-        interactions['fast_match_formation'] = (ratio < 0.5).astype(int)
-        interactions['slow_match_formation'] = (ratio > 2).astype(int)
-        
-        # Combine with program type
-        if 'Program Type' in df.columns:
-            for program in df['Program Type'].unique():
-                if len(df[df['Program Type'] == program]) > 50:
-                    is_program = (df['Program Type'] == program).astype(int)
-                    interactions[f'{program}_fast_formation'] = is_program * interactions['fast_match_formation']
-                    interactions[f'{program}_slow_formation'] = is_program * interactions['slow_match_formation']
-    
-    # NEW: 10. Add interactions with match duration categories
-    if all(col in date_features.columns for col in ['length_1yr', 'length_3yr_plus']):
-        # Short matches
-        if 'is_summer' in date_features.columns:
-            interactions['short_match_summer'] = date_features['length_1yr'] * date_features['is_summer']
-            interactions['long_match_summer'] = date_features['length_3yr_plus'] * date_features['is_summer']
-        
-        # Age and match length interactions
-        if 'age_difference' in date_features.columns:
-            interactions['short_match_age_diff'] = date_features['length_1yr'] * date_features['age_difference']
-            interactions['long_match_age_diff'] = date_features['length_3yr_plus'] * date_features['age_difference']
+    # Handle missing values - use 0 for interaction features
+    interactions = interactions.fillna(0)
     
     return interactions
 
@@ -537,57 +483,55 @@ X_train_selected, X_test_selected, selected_features, feature_importance = selec
 with open(OUTPUT_FILE, 'a') as f:
     f.write(f"Total features after selection: {X_train_selected.shape[1]}\n\n")
 
-# Models to evaluate
+# Models to evaluate with hyperparameter optimization
 models = {
     "Linear Regression": LinearRegression(),
     "Ridge Regression": Ridge(),
     "Lasso Regression": Lasso(),
-    "Random Forest": RandomForestRegressor(random_state=42, n_estimators=150, min_samples_leaf=2),
-    "Gradient Boosting": GradientBoostingRegressor(random_state=42, n_estimators=150),
-    # Add XGBoost and LightGBM models
+    "Random Forest": RandomForestRegressor(random_state=42),
+    "Gradient Boosting": GradientBoostingRegressor(random_state=42),
     "XGBoost": xgb.XGBRegressor(
         objective='reg:squarederror',
-        n_estimators=150,
-        learning_rate=0.05,
-        max_depth=6,
-        min_child_weight=2,
-        subsample=0.8,
-        colsample_bytree=0.8,
         random_state=42
     ),
     "LightGBM": lgb.LGBMRegressor(
         objective='regression',
-        n_estimators=150,
-        learning_rate=0.05,
-        num_leaves=31,
-        max_depth=6,
-        min_child_samples=20,
-        subsample=0.8,
-        colsample_bytree=0.8,
         random_state=42
     ),
 }
 
-# Add a stacking ensemble with the new models included
-base_models = [
-    ('rf', RandomForestRegressor(random_state=42, n_estimators=150)),
-    ('gb', GradientBoostingRegressor(random_state=42, n_estimators=150)),
-    ('xgb', xgb.XGBRegressor(
-        objective='reg:squarederror',
-        n_estimators=150, 
-        random_state=42
-    )),
-    ('lgb', lgb.LGBMRegressor(
-        objective='regression',
-        n_estimators=150,
-        random_state=42
-    ))
-]
-models["Stacking Ensemble"] = StackingRegressor(
-    estimators=base_models,
-    final_estimator=Ridge(),
-    cv=5
-)
+# Define parameter grids for hyperparameter optimization
+param_grids = {
+    "Random Forest": {
+        'n_estimators': [100, 150, 200],
+        'max_depth': [None, 10, 15, 20],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    },
+    "Gradient Boosting": {
+        'n_estimators': [100, 150, 200],
+        'learning_rate': [0.01, 0.05, 0.1],
+        'max_depth': [3, 4, 5, 6],
+        'subsample': [0.8, 0.9, 1.0]
+    },
+    "XGBoost": {
+        'n_estimators': [100, 150, 200],
+        'learning_rate': [0.01, 0.05, 0.1],
+        'max_depth': [4, 5, 6, 7],
+        'min_child_weight': [1, 2, 3],
+        'subsample': [0.8, 0.9, 1.0],
+        'colsample_bytree': [0.8, 0.9, 1.0]
+    },
+    "LightGBM": {
+        'n_estimators': [100, 150, 200],
+        'learning_rate': [0.01, 0.05, 0.1],
+        'num_leaves': [20, 31, 40],
+        'max_depth': [4, 5, 6, 7],
+        'min_child_samples': [15, 20, 25],
+        'subsample': [0.8, 0.9, 1.0],
+        'colsample_bytree': [0.8, 0.9, 1.0]
+    }
+}
 
 # Results storage
 results = {}
@@ -601,11 +545,30 @@ with open(OUTPUT_FILE, 'a') as f:
 
 # Train and evaluate each model
 for name, model in models.items():
-    # Train the model on selected features
-    model.fit(X_train_selected, y_train)
+    if name in param_grids:
+        # Perform hyperparameter optimization
+        grid_search = GridSearchCV(
+            model,
+            param_grids[name],
+            cv=5,
+            scoring='neg_root_mean_squared_error',
+            n_jobs=-1,
+            verbose=1
+        )
+        grid_search.fit(X_train_selected, y_train)
+        best_model = grid_search.best_estimator_
+        
+        # Log best parameters
+        with open(OUTPUT_FILE, 'a') as f:
+            f.write(f"\nBest parameters for {name}:\n")
+            for param, value in grid_search.best_params_.items():
+                f.write(f"  {param}: {value}\n")
+    else:
+        best_model = model
+        best_model.fit(X_train_selected, y_train)
     
     # Make predictions
-    y_pred = model.predict(X_test_selected)
+    y_pred = best_model.predict(X_test_selected)
     
     # Calculate metrics
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
@@ -614,7 +577,8 @@ for name, model in models.items():
     # Store results
     results[name] = {
         'rmse': rmse,
-        'r2': r2
+        'r2': r2,
+        'model': best_model
     }
     
     # Log results
@@ -637,28 +601,12 @@ with open(OUTPUT_FILE, 'a') as f:
 best_model_name = sorted_models[0][0]
 best_rmse = results[best_model_name]['rmse']
 best_r2 = results[best_model_name]['r2']
+best_model = results[best_model_name]['model']
 
 with open(OUTPUT_FILE, 'a') as f:
     f.write(f"\nBest Model: {best_model_name}\n")
     f.write(f"RMSE: {best_rmse:.4f}\n")
     f.write(f"R²: {best_r2:.4f}\n\n")
-    
-    # Compare with previous results
-    previous_rmse = 9.8005  # From the original date_features_results.txt
-    previous_r2 = 0.7550    # From the original date_features_results.txt
-    
-    rmse_change = ((previous_rmse - best_rmse) / previous_rmse) * 100
-    r2_change = ((best_r2 - previous_r2) / previous_r2) * 100
-    
-    f.write("Comparison with Original Model (9.8005 RMSE):\n")
-    f.write(f"Original Best Model (Random Forest):\n")
-    f.write(f"  - RMSE: {previous_rmse:.4f}\n")
-    f.write(f"  - R²: {previous_r2:.4f}\n\n")
-    
-    f.write(f"Improvement:\n")
-    f.write(f"  - RMSE: {rmse_change:.2f}% {'better' if rmse_change > 0 else 'worse'}\n")
-    f.write(f"  - R²: {r2_change:.2f}% {'better' if r2_change > 0 else 'worse'}\n\n")
-    
     f.write("Analysis complete.\n")
 
 print(f"Analysis complete. Results saved to {OUTPUT_FILE}")

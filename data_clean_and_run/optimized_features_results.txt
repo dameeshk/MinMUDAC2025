@@ -1,5 +1,5 @@
 Match Length Prediction Model with Optimized Feature Engineering
-Date: 2025-04-02 13:42:23
+Date: 2025-04-02 14:45:52
 ================================================================================
 
 Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\data_clean_and_run\filled_data.xlsx
@@ -15,8 +15,17 @@ Target variable: Match Length
 Match Length statistics: Mean=23.38, Median=16.80, Min=0.00, Max=97.20
 
 Created date-based features:
+- days_application_to_interview
+- log_days_application_to_interview
+- is_fast_application_process
+- is_slow_application_process
+- application_month
+- is_summer_application
+- is_school_year_application
 - days_approval_to_match
+- log_days_approval_to_match
 - days_acceptance_to_match
+- log_days_acceptance_to_match
 - big_age
 - little_age
 - age_difference
@@ -34,8 +43,12 @@ Created date-based features:
 - log_age_diff
 - days_application_to_match
 - log_days_application_to_match
+- interview_to_match_ratio
+- is_efficient_process
 - days_interview_to_match
+- log_days_interview_to_match
 - days_little_acceptance_to_match
+- log_days_little_acceptance_to_match
 - match_month
 - match_quarter
 - match_year
@@ -58,82 +71,92 @@ Created date-based features:
 - is_weekend
 - match_year_centered
 - match_year_squared
-- length_1yr
-- length_1_2yr
-- length_2_3yr
-- length_3yr_plus
-- length_0_6mo
-- length_6mo_1yr
-- length_3yr_5yr
-- length_5yr_plus
 
-Total date features: 51
+Total date features: 56
 
 Creating optimized interaction features:
-  - Created 92 optimized interaction features
+  - Created 43 optimized interaction features
 
 Original numeric features: 9
 Original categorical features: 13
-Date-based features: 51
-Interaction features: 92
-Total features before selection: 165
+Date-based features: 56
+Interaction features: 43
+Total features before selection: 121
 
 Data split: Train=2456 samples, Test=819 samples
 
 Performing optimized feature selection:
-  - Selected 9 out of 370 features
+  - Selected 32 out of 326 features
   - Top 10 most important features:
-    1. long_match_age_diff: 0.509332
-    2. length_3yr_plus: 0.197544
-    3. length_1yr: 0.060132
-    4. length_3yr_5yr: 0.050538
-    5. short_match_age_diff: 0.044599
-    6. length_5yr_plus: 0.043659
-    7. length_2_3yr: 0.029886
-    8. length_1_2yr: 0.007891
-    9. Community_x_years_since: 0.006825
-    10. length_0_6mo: 0.004060
+    1. Stage_Closed: 0.274666
+    2. years_since_x_big_age: 0.062067
+    3. match_year_centered: 0.046904
+    4. Closure Reason_Child: Graduated: 0.043260
+    5. match_year: 0.041485
+    6. Closure Reason_Successful match closure: 0.035969
+    7. years_since_match: 0.025197
+    8. Closure Reason_Child/Family: Lost contact with agency: 0.021656
+    9. log_years_since_match: 0.019759
+    10. community_x_big_age: 0.019472
   - Feature importance plot saved to: C:\Users\solo\Desktop\Repos\MinMUDAC2025\data_clean_and_run\feature_importance.png
 
-Total features after selection: 9
+Total features after selection: 32
 
 Model Evaluation with Optimized Features:
 --------------------------------------------------------------------------------
 Model                     RMSE       R²        
 --------------------------------------------------------------------------------
-Linear Regression         4.6470     0.9449    
-Ridge Regression          4.6459     0.9449    
-Lasso Regression          4.8626     0.9397    
-Random Forest             4.6160     0.9457    
-Gradient Boosting         4.3989     0.9506    
-XGBoost                   4.3632     0.9514    
-LightGBM                  4.3652     0.9514    
-Stacking Ensemble         4.4122     0.9503    
+Linear Regression         12.9916    0.5695    
+Ridge Regression          12.9956    0.5692    
+Lasso Regression          15.4988    0.3873    
+
+Best parameters for Random Forest:
+  max_depth: 10
+  min_samples_leaf: 1
+  min_samples_split: 5
+  n_estimators: 200
+Random Forest             10.6831    0.7089    
+
+Best parameters for Gradient Boosting:
+  learning_rate: 0.05
+  max_depth: 6
+  n_estimators: 100
+  subsample: 0.9
+Gradient Boosting         10.6483    0.7108    
+
+Best parameters for XGBoost:
+  colsample_bytree: 0.8
+  learning_rate: 0.05
+  max_depth: 4
+  min_child_weight: 3
+  n_estimators: 200
+  subsample: 0.9
+XGBoost                   10.5471    0.7163    
+
+Best parameters for LightGBM:
+  colsample_bytree: 0.9
+  learning_rate: 0.05
+  max_depth: 5
+  min_child_samples: 15
+  n_estimators: 150
+  num_leaves: 20
+  subsample: 0.8
+LightGBM                  10.6401    0.7112    
 
 Ranked Models by RMSE (lower is better):
 --------------------------------------------------------------------------------
 Rank  Model                     RMSE       R²        
 --------------------------------------------------------------------------------
-1     XGBoost                   4.3632     0.9514    
-2     LightGBM                  4.3652     0.9514    
-3     Gradient Boosting         4.3989     0.9506    
-4     Stacking Ensemble         4.4122     0.9503    
-5     Random Forest             4.6160     0.9457    
-6     Ridge Regression          4.6459     0.9449    
-7     Linear Regression         4.6470     0.9449    
-8     Lasso Regression          4.8626     0.9397    
+1     XGBoost                   10.5471    0.7163    
+2     LightGBM                  10.6401    0.7112    
+3     Gradient Boosting         10.6483    0.7108    
+4     Random Forest             10.6831    0.7089    
+5     Linear Regression         12.9916    0.5695    
+6     Ridge Regression          12.9956    0.5692    
+7     Lasso Regression          15.4988    0.3873    
 
 Best Model: XGBoost
-RMSE: 4.3632
-R²: 0.9514
-
-Comparison with Original Model (9.8005 RMSE):
-Original Best Model (Random Forest):
-  - RMSE: 9.8005
-  - R²: 0.7550
-
-Improvement:
-  - RMSE: 55.48% better
-  - R²: 26.02% better
+RMSE: 10.5471
+R²: 0.7163
 
 Analysis complete.

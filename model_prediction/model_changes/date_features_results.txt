@@ -1,5 +1,5 @@
 Match Length Prediction Model Evaluation with Date Features
-Date: 2025-03-31 19:14:50
+Date: 2025-04-02 14:41:54
 ================================================================================
 
 Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\Data\Novice.xlsx
@@ -37,7 +37,7 @@ Model Evaluation:
 --------------------------------------------------------------------------------
 Model                     RMSE       R²        
 --------------------------------------------------------------------------------
-Linear Regression         12.6964    0.5888    
+Linear Regression         12.6963    0.5888    
 Ridge Regression          12.5615    0.5975    
 Lasso Regression          16.2423    0.3271    
 Random Forest             9.8055     0.7548    
@@ -50,7 +50,7 @@ Rank  Model                     RMSE       R²
 1     Random Forest             9.8055     0.7548    
 2     Gradient Boosting         10.3400    0.7273    
 3     Ridge Regression          12.5615    0.5975    
-4     Linear Regression         12.6964    0.5888    
+4     Linear Regression         12.6963    0.5888    
 5     Lasso Regression          16.2423    0.3271    
 
 Best Model: Random Forest
