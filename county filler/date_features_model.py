@@ -23,6 +23,10 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Add XGBoost and LightGBM
+import xgboost as xgb
+import lightgbm as lgb
+
 # Set paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(current_dir, 'filled_data.xlsx')
@@ -404,12 +408,44 @@ models = {
     "Lasso Regression": Lasso(),
     "Random Forest": RandomForestRegressor(random_state=42, n_estimators=150, min_samples_leaf=2),
     "Gradient Boosting": GradientBoostingRegressor(random_state=42, n_estimators=150),
+    # Add XGBoost and LightGBM models
+    "XGBoost": xgb.XGBRegressor(
+        objective='reg:squarederror',
+        n_estimators=150,
+        learning_rate=0.05,
+        max_depth=6,
+        min_child_weight=2,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        random_state=42
+    ),
+    "LightGBM": lgb.LGBMRegressor(
+        objective='regression',
+        n_estimators=150,
+        learning_rate=0.05,
+        num_leaves=31,
+        max_depth=6,
+        min_child_samples=20,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        random_state=42
+    ),
 }
 
-# Add a stacking ensemble
+# Add a stacking ensemble with the new models included
 base_models = [
     ('rf', RandomForestRegressor(random_state=42, n_estimators=150)),
-    ('gb', GradientBoostingRegressor(random_state=42, n_estimators=150))
+    ('gb', GradientBoostingRegressor(random_state=42, n_estimators=150)),
+    ('xgb', xgb.XGBRegressor(
+        objective='reg:squarederror',
+        n_estimators=150, 
+        random_state=42
+    )),
+    ('lgb', lgb.LGBMRegressor(
+        objective='regression',
+        n_estimators=150,
+        random_state=42
+    ))
 ]
 models["Stacking Ensemble"] = StackingRegressor(
     estimators=base_models,

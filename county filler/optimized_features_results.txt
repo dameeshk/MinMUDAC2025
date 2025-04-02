@@ -1,5 +1,5 @@
 Match Length Prediction Model with Optimized Feature Engineering
-Date: 2025-04-02 12:54:09
+Date: 2025-04-02 13:22:15
 ================================================================================
 
 Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\county filler\filled_data.xlsx
@@ -84,18 +84,22 @@ Ridge Regression          6.0688     0.9061
 Lasso Regression          7.5363     0.8551    
 Random Forest             5.6435     0.9188    
 Gradient Boosting         5.2412     0.9299    
-Stacking Ensemble         5.2861     0.9287    
+XGBoost                   5.3942     0.9258    
+LightGBM                  6.4645     0.8934    
+Stacking Ensemble         5.2761     0.9290    
 
 Ranked Models by RMSE (lower is better):
 --------------------------------------------------------------------------------
 Rank  Model                     RMSE       R²        
 --------------------------------------------------------------------------------
 1     Gradient Boosting         5.2412     0.9299    
-2     Stacking Ensemble         5.2861     0.9287    
-3     Random Forest             5.6435     0.9188    
-4     Linear Regression         6.0667     0.9061    
-5     Ridge Regression          6.0688     0.9061    
-6     Lasso Regression          7.5363     0.8551    
+2     Stacking Ensemble         5.2761     0.9290    
+3     XGBoost                   5.3942     0.9258    
+4     Random Forest             5.6435     0.9188    
+5     Linear Regression         6.0667     0.9061    
+6     Ridge Regression          6.0688     0.9061    
+7     LightGBM                  6.4645     0.8934    
+8     Lasso Regression          7.5363     0.8551    
 
 Best Model: Gradient Boosting
 RMSE: 5.2412
