@@ -1,0 +1,139 @@
+Missing Data Percentage Comparison Report
+Generated on: 2025-04-01 20:24:50
+================================================================================
+
+## SUMMARY TABLE ##
+
+File                      Rows     Columns  Missing %  Missing Cells  
+----------------------------------------------------------------------
+Original novice.xlsx      3275     66       54.64%  118097         
+Filled data.xlsx          3275     66       54.43%  117647         
+Enhanced filled data.xlsx 3275     66       53.52%  115681         
+
+================================================================================
+
+DETAILED ANALYSIS: Original novice.xlsx
+File path: Data\novice.xlsx
+--------------------------------------------------------------------------------
+
+Basic Information:
+  - Rows: 3275
+  - Columns: 66
+  - Total cells: 216150
+  - Missing cells: 118097 (54.64%)
+  - Analysis time: 0.69 seconds
+
+Column Completeness:
+  - Completely filled columns: 11 (16.67%)
+  - Columns with >50% missing: 41 (62.12%)
+
+Top 10 columns with most missing values:
+  - Big Contact: Interest Finder - Entertainment: 99.18% missing
+  - Big Contact: Interest Finder - Sports: 99.18% missing
+  - Big Contact: Interest Finder - Hobbies: 99.18% missing
+  - Big Contact: Interest Finder - Places To Go: 99.18% missing
+  - Little Contact: Interest Finder - Other Interests: 99.02% missing
+  - Big Open to Cross-Gender Match: 98.87% missing
+  - Little Contact: Language(s) Spoken: 98.84% missing
+  - Big Contact: Former Big/Little: 98.05% missing
+  - Little Contact: Interest Finder - Career: 97.80% missing
+  - Little Contact: Interest Finder - Three Wishes: 97.80% missing
+
+================================================================================
+
+DETAILED ANALYSIS: Filled data.xlsx
+File path: county filler\filled_data.xlsx
+--------------------------------------------------------------------------------
+
+Basic Information:
+  - Rows: 3275
+  - Columns: 66
+  - Total cells: 216150
+  - Missing cells: 117647 (54.43%)
+  - Analysis time: 0.57 seconds
+
+Column Completeness:
+  - Completely filled columns: 11 (16.67%)
+  - Columns with >50% missing: 41 (62.12%)
+
+Top 10 columns with most missing values:
+  - Big Contact: Interest Finder - Entertainment: 99.18% missing
+  - Big Contact: Interest Finder - Sports: 99.18% missing
+  - Big Contact: Interest Finder - Hobbies: 99.18% missing
+  - Big Contact: Interest Finder - Places To Go: 99.18% missing
+  - Little Contact: Interest Finder - Other Interests: 99.02% missing
+  - Big Open to Cross-Gender Match: 98.87% missing
+  - Little Contact: Language(s) Spoken: 98.84% missing
+  - Big Contact: Former Big/Little: 98.05% missing
+  - Little Contact: Interest Finder - Career: 97.80% missing
+  - Little Contact: Interest Finder - Three Wishes: 97.80% missing
+
+================================================================================
+
+DETAILED ANALYSIS: Enhanced filled data.xlsx
+File path: county filler\enhanced_filled_data.xlsx
+--------------------------------------------------------------------------------
+
+Basic Information:
+  - Rows: 3275
+  - Columns: 66
+  - Total cells: 216150
+  - Missing cells: 115681 (53.52%)
+  - Analysis time: 0.30 seconds
+
+Column Completeness:
+  - Completely filled columns: 11 (16.67%)
+  - Columns with >50% missing: 40 (60.61%)
+
+Top 10 columns with most missing values:
+  - Big Contact: Interest Finder - Entertainment: 99.18% missing
+  - Big Contact: Interest Finder - Sports: 99.18% missing
+  - Big Contact: Interest Finder - Hobbies: 99.18% missing
+  - Big Contact: Interest Finder - Places To Go: 99.18% missing
+  - Little Contact: Interest Finder - Other Interests: 99.02% missing
+  - Big Open to Cross-Gender Match: 98.87% missing
+  - Little Contact: Language(s) Spoken: 98.84% missing
+  - Big Contact: Former Big/Little: 98.05% missing
+  - Little Contact: Interest Finder - Career: 97.80% missing
+  - Little Contact: Interest Finder - Three Wishes: 97.80% missing
+
+================================================================================
+
+IMPROVEMENT ANALYSIS
+--------------------------------------------------------------------------------
+
+Improvement from Original novice.xlsx to Filled data.xlsx:
+  - Absolute reduction: 450 cells filled
+  - Percentage point reduction: 0.21%
+  - Relative improvement: 0.38% of missing values filled
+
+Column-specific improvements (top 10):
+  - Big County: 450 values filled (68.70%)
+  - Big Occupation: 0 values filled (0.00%)
+  - Big: Military: 0 values filled (0.00%)
+  - Big Approved Date: 0 values filled (0.00%)
+  - Big Level of Education: 0 values filled (0.00%)
+  - Big Languages: 0 values filled (0.00%)
+  - Big Gender: 0 values filled (0.00%)
+  - Big Employer: 0 values filled (0.00%)
+  - Big Race/Ethnicity: 0 values filled (0.00%)
+  - Closure Reason: 0 values filled (0.00%)
+
+Improvement from Original novice.xlsx to Enhanced filled data.xlsx:
+  - Absolute reduction: 2416 cells filled
+  - Percentage point reduction: 1.12%
+  - Relative improvement: 2.05% of missing values filled
+
+Column-specific improvements (top 10):
+  - Big Level of Education: 1953 values filled (69.13%)
+  - Big County: 450 values filled (68.70%)
+  - Big Occupation: 13 values filled (4.00%)
+  - Big: Military: 0 values filled (0.00%)
+  - Big Approved Date: 0 values filled (0.00%)
+  - Big Languages: 0 values filled (0.00%)
+  - Big Gender: 0 values filled (0.00%)
+  - Big Employer: 0 values filled (0.00%)
+  - Big Race/Ethnicity: 0 values filled (0.00%)
+  - Closure Reason: 0 values filled (0.00%)
+
+Analysis complete!

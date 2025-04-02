@@ -1,0 +1,60 @@
+Match Length Prediction Model Evaluation with Date Features
+Date: 2025-03-31 19:14:50
+================================================================================
+
+Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\Data\Novice.xlsx
+
+Data loaded successfully. Shape: (3275, 66)
+
+Data Overview:
+Total rows: 3275
+Total columns: 66
+
+Data Preprocessing:
+Target variable: Match Length
+Match Length statistics: Mean=23.38, Median=16.80, Min=0.00, Max=97.20
+
+Created date-based features:
+- days_approval_to_match
+- days_acceptance_to_match
+- big_age
+- little_age
+- age_difference
+- match_month
+- match_quarter
+- match_year
+
+Total date features: 8
+
+Original numeric features: 9
+Original categorical features: 12
+Date-based features: 8
+Total features: 29
+
+Data split: Train=2456 samples, Test=819 samples
+
+Model Evaluation:
+--------------------------------------------------------------------------------
+Model                     RMSE       R²        
+--------------------------------------------------------------------------------
+Linear Regression         12.6964    0.5888    
+Ridge Regression          12.5615    0.5975    
+Lasso Regression          16.2423    0.3271    
+Random Forest             9.8055     0.7548    
+Gradient Boosting         10.3400    0.7273    
+
+Ranked Models by RMSE (lower is better):
+--------------------------------------------------------------------------------
+Rank  Model                     RMSE       R²        
+--------------------------------------------------------------------------------
+1     Random Forest             9.8055     0.7548    
+2     Gradient Boosting         10.3400    0.7273    
+3     Ridge Regression          12.5615    0.5975    
+4     Linear Regression         12.6964    0.5888    
+5     Lasso Regression          16.2423    0.3271    
+
+Best Model: Random Forest
+RMSE: 9.8055
+R²: 0.7548
+
+Analysis complete.

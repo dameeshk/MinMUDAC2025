@@ -1,0 +1,67 @@
+Match Length Prediction Model Evaluation with Date Features
+Date: 2025-04-01 19:13:41
+================================================================================
+
+Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\county filler\filled_data.xlsx
+
+Data loaded successfully. Shape: (3275, 66)
+
+Data Overview:
+Total rows: 3275
+Total columns: 66
+
+Data Preprocessing:
+Target variable: Match Length
+Match Length statistics: Mean=23.38, Median=16.80, Min=0.00, Max=97.20
+
+Created date-based features:
+- days_approval_to_match
+- days_acceptance_to_match
+- big_age
+- little_age
+- age_difference
+- age_ratio
+- age_product
+- match_month
+- match_quarter
+- match_year
+- month_sin
+- month_cos
+- years_since_match
+- is_summer
+- is_school_year
+
+Total date features: 15
+
+Original numeric features: 9
+Original categorical features: 12
+Date-based features: 15
+Total features: 36
+
+Data split: Train=2456 samples, Test=819 samples
+
+Model Evaluation:
+--------------------------------------------------------------------------------
+Model                     RMSE       R²        
+--------------------------------------------------------------------------------
+Linear Regression         12.5815    0.5962    
+Ridge Regression          12.4357    0.6055    
+Lasso Regression          16.2335    0.3278    
+Random Forest             9.8005     0.7550    
+Gradient Boosting         10.4137    0.7234    
+
+Ranked Models by RMSE (lower is better):
+--------------------------------------------------------------------------------
+Rank  Model                     RMSE       R²        
+--------------------------------------------------------------------------------
+1     Random Forest             9.8005     0.7550    
+2     Gradient Boosting         10.4137    0.7234    
+3     Ridge Regression          12.4357    0.6055    
+4     Linear Regression         12.5815    0.5962    
+5     Lasso Regression          16.2335    0.3278    
+
+Best Model: Random Forest
+RMSE: 9.8005
+R²: 0.7550
+
+Analysis complete.

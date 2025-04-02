@@ -1,0 +1,102 @@
+Match Length Prediction Model with Feature Selection and Interactions
+Date: 2025-04-01 19:34:40
+================================================================================
+
+Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\county filler\enhanced_filled_data.xlsx
+
+Data loaded successfully. Shape: (3275, 66)
+
+Data Overview:
+Total rows: 3275
+Total columns: 66
+
+Data Preprocessing:
+Target variable: Match Length
+Match Length statistics: Mean=23.38, Median=16.80, Min=0.00, Max=97.20
+
+Created date-based features:
+- days_approval_to_match
+- days_acceptance_to_match
+- big_age
+- little_age
+- age_difference
+- age_ratio
+- age_product
+- big_age_squared
+- little_age_squared
+- age_difference_squared
+- match_month
+- match_quarter
+- match_year
+- month_sin
+- month_cos
+- years_since_match
+- is_summer
+- is_school_year
+- is_school_start
+- is_school_end
+
+Total date features: 20
+
+Creating interaction features:
+  - Created 24 interaction features
+
+Original numeric features: 9
+Original categorical features: 13
+Date-based features: 20
+Interaction features: 24
+Total features before selection: 66
+
+Data split: Train=2456 samples, Test=819 samples
+
+Performing feature selection with Random Forest importance:
+  - Selected 36 out of 230 features
+  - Top 10 most important features:
+    1. Stage_Closed: 0.294060
+    2. match_year: 0.143667
+    3. years_since_match: 0.073426
+    4. Closure Reason_Child: Graduated: 0.043700
+    5. Closure Reason_Successful match closure: 0.035838
+    6. Program_General Community: 0.022451
+    7. Closure Reason_Child/Family: Lost contact with agency: 0.020755
+    8. Big Home Census Block Group: 0.018523
+    9. days_approval_to_match: 0.016812
+    10. Little Mailing Address Census Block Group: 0.016644
+  - Feature importance plot saved to: C:\Users\solo\Desktop\Repos\MinMUDAC2025\county filler\feature_importance.png
+
+Total features after selection: 36
+
+Model Evaluation with Feature Selection and Interactions:
+--------------------------------------------------------------------------------
+Model                     RMSE       R²        
+--------------------------------------------------------------------------------
+Linear Regression         13.1963    0.5558    
+Ridge Regression          13.1947    0.5559    
+Lasso Regression          16.1791    0.3323    
+Random Forest             10.5926    0.7138    
+Gradient Boosting         10.4989    0.7188    
+
+Ranked Models by RMSE (lower is better):
+--------------------------------------------------------------------------------
+Rank  Model                     RMSE       R²        
+--------------------------------------------------------------------------------
+1     Gradient Boosting         10.4989    0.7188    
+2     Random Forest             10.5926    0.7138    
+3     Ridge Regression          13.1947    0.5559    
+4     Linear Regression         13.1963    0.5558    
+5     Lasso Regression          16.1791    0.3323    
+
+Best Model: Gradient Boosting
+RMSE: 10.4989
+R²: 0.7188
+
+Comparison with Previous Model:
+Previous Best Model (Random Forest):
+  - RMSE: 9.8419
+  - R²: 0.7529
+
+Improvement:
+  - RMSE: -6.68% worse
+  - R²: -4.52% worse
+
+Analysis complete.

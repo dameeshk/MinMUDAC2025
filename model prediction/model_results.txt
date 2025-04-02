@@ -1,0 +1,52 @@
+Match Length Prediction Model Evaluation
+Date: 2025-03-31 19:05:08
+================================================================================
+
+Reading data from: C:\Users\solo\Desktop\Repos\MinMUDAC2025\Data\Novice.xlsx
+
+Data loaded successfully. Shape: (3275, 66)
+
+Data Overview:
+Total rows: 3275
+Total columns: 66
+
+Data Preprocessing:
+Target variable: Match Length
+Match Length statistics: Mean=23.38, Median=16.80, Min=0.00, Max=97.20
+
+Removed 24 columns with >80% missing values
+Remaining columns: 42
+
+Numeric features: 9
+Categorical features: 12
+Removed 3 ID columns and 8 high cardinality columns
+
+Final feature set: 21 columns
+
+Data split: Train=2456 samples, Test=819 samples
+
+Model Evaluation:
+--------------------------------------------------------------------------------
+Model                     RMSE       R²        
+--------------------------------------------------------------------------------
+Linear Regression         16.1342    0.3360    
+Ridge Regression          16.0363    0.3441    
+Lasso Regression          18.6977    0.1083    
+Random Forest             11.6533    0.6536    
+Gradient Boosting         12.2009    0.6203    
+
+Ranked Models by RMSE (lower is better):
+--------------------------------------------------------------------------------
+Rank  Model                     RMSE       R²        
+--------------------------------------------------------------------------------
+1     Random Forest             11.6533    0.6536    
+2     Gradient Boosting         12.2009    0.6203    
+3     Ridge Regression          16.0363    0.3441    
+4     Linear Regression         16.1342    0.3360    
+5     Lasso Regression          18.6977    0.1083    
+
+Best Model: Random Forest
+RMSE: 11.6533
+R²: 0.6536
+
+Analysis complete.
