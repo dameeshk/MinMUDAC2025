@@ -1,5 +1,5 @@
 Data Cleaning and Imputation Report
-Date: 2025-04-02 13:15:11
+Date: 2025-04-02 13:42:00
 ================================================================================
 
 Step 1: Automatic County Filling
@@ -43,7 +43,7 @@ Final Missing Data Summary:
 Total missing values: 115681 (53.52%)
 Total cells filled: 2416 (2.05% of initial missing)
 
-Cleaned dataset saved to: C:\Users\solo\Desktop\Repos\MinMUDAC2025\county filler\filled_data.xlsx
+Cleaned dataset saved to: C:\Users\solo\Desktop\Repos\MinMUDAC2025\data_clean_and_run\filled_data.xlsx
 
 
 Summary of Improvements:

@@ -75,16 +75,43 @@ def create_date_features(df):
         
         # Add age cubic terms (helps capture more complex relationships)
         features['big_age_cubed'] = features['big_age'] ** 3 / 1000  # Scale down
+        
+        # NEW: Add more polynomial age features
+        features['little_age_cubed'] = features['little_age'] ** 3 / 1000  # Scale down
+        features['age_diff_cubed'] = features['age_difference'] ** 3 / 1000  # Scale down
+        features['age_ratio_squared'] = features['age_ratio'] ** 2
+        
+        # NEW: Add logarithmic transformations of age features
+        features['log_big_age'] = np.log1p(features['big_age'])
+        features['log_little_age'] = np.log1p(features['little_age'])
+        features['log_age_diff'] = np.log1p(abs(features['age_difference']))
     
     # Process time features
     if all(col in df.columns for col in ['Big Interview Date', 'Big Acceptance Date']):
         features['days_interview_to_acceptance'] = (df['Big Acceptance Date'] - df['Big Interview Date']).dt.days
+    
+    # NEW: Add more time sequence features
+    if all(col in df.columns for col in ['Little Application Received', 'Match Activation Date']):
+        features['days_application_to_match'] = (df['Match Activation Date'] - df['Little Application Received']).dt.days
+        features['log_days_application_to_match'] = np.log1p(features['days_application_to_match'])
+    
+    if all(col in df.columns for col in ['Little Interview Date', 'Match Activation Date']):
+        features['days_interview_to_match'] = (df['Match Activation Date'] - df['Little Interview Date']).dt.days
+    
+    if all(col in df.columns for col in ['Little Acceptance Date', 'Match Activation Date']):
+        features['days_little_acceptance_to_match'] = (df['Match Activation Date'] - df['Little Acceptance Date']).dt.days
+    
+    # NEW: Add time sequence ratios (relative pace of progress)
+    if all(col in features.columns for col in ['days_acceptance_to_match', 'days_interview_to_acceptance']):
+        # Avoid division by zero
+        features['interview_acceptance_match_ratio'] = features['days_acceptance_to_match'] / features['days_interview_to_acceptance'].replace(0, 1)
     
     # Seasonality features
     if 'Match Activation Date' in df.columns:
         features['match_month'] = df['Match Activation Date'].dt.month
         features['match_quarter'] = df['Match Activation Date'].dt.quarter
         features['match_year'] = df['Match Activation Date'].dt.year
+        features['match_day_of_week'] = df['Match Activation Date'].dt.dayofweek
         
         # Add cyclical month encoding (better captures seasons)
         features['month_sin'] = np.sin(2 * np.pi * features['match_month']/12)
@@ -94,6 +121,10 @@ def create_date_features(df):
         features['quarter_sin'] = np.sin(2 * np.pi * features['match_quarter']/4)
         features['quarter_cos'] = np.cos(2 * np.pi * features['match_quarter']/4)
         
+        # NEW: Add day of week cyclical encoding
+        features['day_of_week_sin'] = np.sin(2 * np.pi * features['match_day_of_week']/7)
+        features['day_of_week_cos'] = np.cos(2 * np.pi * features['match_day_of_week']/7)
+        
         # Add year interaction features
         current_year = datetime.now().year
         features['years_since_match'] = current_year - features['match_year']
@@ -102,11 +133,20 @@ def create_date_features(df):
         # Season indicators
         features['is_summer'] = features['match_month'].isin([6, 7, 8]).astype(int)
         features['is_winter'] = features['match_month'].isin([12, 1, 2]).astype(int)
+        features['is_spring'] = features['match_month'].isin([3, 4, 5]).astype(int)
+        features['is_fall'] = features['match_month'].isin([9, 10, 11]).astype(int)
         features['is_school_year'] = (~features['is_summer']).astype(int)
         
         # School year transitions
         features['is_school_start'] = features['match_month'].isin([8, 9]).astype(int)
         features['is_school_end'] = features['match_month'].isin([5, 6]).astype(int)
+        
+        # NEW: Is weekend feature 
+        features['is_weekend'] = features['match_day_of_week'].isin([5, 6]).astype(int)
+        
+        # NEW: Match year squared (to capture non-linear time trends)
+        features['match_year_centered'] = features['match_year'] - 2020  # Center around a reasonable year
+        features['match_year_squared'] = features['match_year_centered'] ** 2
     
     # Duration buckets (helps capture non-linear patterns in match length)
     if 'Match Length' in df.columns:
@@ -115,6 +155,12 @@ def create_date_features(df):
         features['length_1_2yr'] = ((df['Match Length'] > 12) & (df['Match Length'] <= 24)).astype(int)
         features['length_2_3yr'] = ((df['Match Length'] > 24) & (df['Match Length'] <= 36)).astype(int)
         features['length_3yr_plus'] = (df['Match Length'] > 36).astype(int)
+        
+        # NEW: Create more granular duration buckets
+        features['length_0_6mo'] = (df['Match Length'] <= 6).astype(int)
+        features['length_6mo_1yr'] = ((df['Match Length'] > 6) & (df['Match Length'] <= 12)).astype(int)
+        features['length_3yr_5yr'] = ((df['Match Length'] > 36) & (df['Match Length'] <= 60)).astype(int)
+        features['length_5yr_plus'] = (df['Match Length'] > 60).astype(int)
     
     # Handle missing values in new features
     features = features.fillna(features.mean())
@@ -132,7 +178,7 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
     ], axis=1)
     
     # Get top categories by frequency to avoid creating too many sparse features
-    top_counties = df['Big County'].value_counts().nlargest(3).index.tolist() if 'Big County' in df.columns else []
+    top_counties = df['Big County'].value_counts().nlargest(5).index.tolist() if 'Big County' in df.columns else []
     
     # 1. Gender match interactions
     if all(col in df.columns for col in ['Big Gender', 'Little Gender']):
@@ -142,6 +188,10 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
         if 'big_age' in date_features.columns:
             interactions['gender_match_x_big_age'] = interactions['gender_match'] * date_features['big_age']
             interactions['gender_match_x_age_difference'] = interactions['gender_match'] * date_features['age_difference']
+            
+            # NEW: Gender match with more complex age features
+            interactions['gender_match_x_age_product'] = interactions['gender_match'] * date_features['age_product']
+            interactions['gender_match_x_age_ratio'] = interactions['gender_match'] * date_features['age_ratio']
     
     # 2. Program type interactions
     if 'Program Type' in df.columns:
@@ -150,10 +200,20 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
         
         if 'big_age' in date_features.columns:
             interactions['community_x_big_age'] = interactions['is_community'] * date_features['big_age']
+            # NEW: Add more program type interactions
+            interactions['community_x_age_difference'] = interactions['is_community'] * date_features['age_difference']
+            interactions['community_x_age_ratio'] = interactions['is_community'] * date_features['age_ratio']
         
         if 'is_summer' in date_features.columns:
             interactions['community_x_summer'] = interactions['is_community'] * date_features['is_summer']
             interactions['community_x_school_year'] = interactions['is_community'] * date_features['is_school_year']
+            
+            # NEW: Add more seasonal interactions with program type
+            if 'is_winter' in date_features.columns:
+                interactions['community_x_winter'] = interactions['is_community'] * date_features['is_winter']
+            if 'is_school_start' in date_features.columns:
+                interactions['community_x_school_start'] = interactions['is_community'] * date_features['is_school_start']
+                interactions['community_x_school_end'] = interactions['is_community'] * date_features['is_school_end']
     
     # 3. County and geographic interactions
     for county in top_counties:
@@ -163,17 +223,41 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
         
         if 'is_summer' in date_features.columns:
             interactions[f'county_{county}_x_summer'] = interactions[f'county_{county}'] * date_features['is_summer']
+            
+            # NEW: Add county interactions with school periods
+            if 'is_school_start' in date_features.columns:
+                interactions[f'county_{county}_x_school_start'] = interactions[f'county_{county}'] * date_features['is_school_start']
     
     # 4. Age difference threshold interactions 
     if 'age_difference' in date_features.columns:
         interactions['large_age_diff'] = (date_features['age_difference'] > 20).astype(int)
         interactions['medium_age_diff'] = ((date_features['age_difference'] >= 10) & 
                                           (date_features['age_difference'] <= 20)).astype(int)
+        
+        # NEW: Add more granular age difference thresholds
+        interactions['small_age_diff'] = (date_features['age_difference'] < 10).astype(int)
+        interactions['very_large_age_diff'] = (date_features['age_difference'] > 30).astype(int)
+        
+        # NEW: Combine age difference with seasons
+        if 'is_summer' in date_features.columns:
+            interactions['large_age_diff_x_summer'] = interactions['large_age_diff'] * date_features['is_summer']
+            interactions['large_age_diff_x_school_year'] = interactions['large_age_diff'] * date_features['is_school_year']
     
     # 5. Year since match interactions
     if 'years_since_match' in date_features.columns:
         if 'Big Age' in numeric_features:
             interactions['years_since_x_big_age'] = date_features['years_since_match'] * df['Big Age'] / 10
+            
+            # NEW: Add more years since match interactions
+            interactions['years_since_squared'] = date_features['years_since_match'] ** 2
+            interactions['years_since_cubed'] = date_features['years_since_match'] ** 3
+            
+        # NEW: Add years since match with program type
+        if 'Program Type' in df.columns:
+            for program in df['Program Type'].unique():
+                if len(df[df['Program Type'] == program]) > 50:  # Only for common programs
+                    is_program = (df['Program Type'] == program).astype(int)
+                    interactions[f'{program}_x_years_since'] = is_program * date_features['years_since_match']
     
     # 6. Match month and program type interactions
     if 'match_month' in date_features.columns and 'Program Type' in df.columns:
@@ -182,6 +266,12 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
                 is_program = (df['Program Type'] == program).astype(int)
                 interactions[f'{program}_summer'] = is_program * date_features['is_summer']
                 interactions[f'{program}_school_start'] = is_program * date_features['is_school_start']
+                
+                # NEW: Add quarter interactions with program type
+                if 'match_quarter' in date_features.columns:
+                    for quarter in range(1, 5):
+                        is_quarter = (date_features['match_quarter'] == quarter).astype(int)
+                        interactions[f'{program}_q{quarter}'] = is_program * is_quarter
     
     # 7. Special closure reason features
     if 'Closure Reason' in df.columns:
@@ -192,6 +282,14 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
         for reason in key_reasons:
             if reason in df['Closure Reason'].unique():
                 interactions[f'closure_{reason}'] = (df['Closure Reason'] == reason).astype(int)
+                
+                # NEW: Add closure reason interactions with age
+                if 'big_age' in date_features.columns:
+                    interactions[f'closure_{reason}_x_big_age'] = interactions[f'closure_{reason}'] * date_features['big_age']
+                
+                # NEW: Add closure reason interactions with match year
+                if 'match_year' in date_features.columns:
+                    interactions[f'closure_{reason}_x_match_year'] = interactions[f'closure_{reason}'] * date_features['match_year']
     
     # 8. Stage and time interactions
     if 'Stage' in df.columns and 'match_year' in date_features.columns:
@@ -200,6 +298,44 @@ def create_optimized_interactions(df, numeric_features, categorical_features, da
         
         if 'years_since_match' in date_features.columns:
             interactions['closed_x_years_since'] = interactions['closed_stage'] * date_features['years_since_match']
+            
+            # NEW: Add more complex stage interactions
+            interactions['closed_x_years_since_squared'] = interactions['closed_stage'] * (date_features['years_since_match'] ** 2)
+            
+        # NEW: Add season interactions with stage
+        if 'is_summer' in date_features.columns:
+            interactions['closed_x_summer'] = interactions['closed_stage'] * date_features['is_summer']
+            interactions['closed_x_school_year'] = interactions['closed_stage'] * date_features['is_school_year']
+    
+    # NEW: 9. Add temporal pattern interactions
+    if all(col in date_features.columns for col in ['days_approval_to_match', 'days_acceptance_to_match']):
+        # Ratio of approval to acceptance times
+        ratio = date_features['days_approval_to_match'] / date_features['days_acceptance_to_match'].replace(0, 1)
+        interactions['approval_acceptance_ratio'] = ratio
+        
+        # Categorize the pace of match formation
+        interactions['fast_match_formation'] = (ratio < 0.5).astype(int)
+        interactions['slow_match_formation'] = (ratio > 2).astype(int)
+        
+        # Combine with program type
+        if 'Program Type' in df.columns:
+            for program in df['Program Type'].unique():
+                if len(df[df['Program Type'] == program]) > 50:
+                    is_program = (df['Program Type'] == program).astype(int)
+                    interactions[f'{program}_fast_formation'] = is_program * interactions['fast_match_formation']
+                    interactions[f'{program}_slow_formation'] = is_program * interactions['slow_match_formation']
+    
+    # NEW: 10. Add interactions with match duration categories
+    if all(col in date_features.columns for col in ['length_1yr', 'length_3yr_plus']):
+        # Short matches
+        if 'is_summer' in date_features.columns:
+            interactions['short_match_summer'] = date_features['length_1yr'] * date_features['is_summer']
+            interactions['long_match_summer'] = date_features['length_3yr_plus'] * date_features['is_summer']
+        
+        # Age and match length interactions
+        if 'age_difference' in date_features.columns:
+            interactions['short_match_age_diff'] = date_features['length_1yr'] * date_features['age_difference']
+            interactions['long_match_age_diff'] = date_features['length_3yr_plus'] * date_features['age_difference']
     
     return interactions
 
