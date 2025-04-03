@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import os
 from datetime import datetime
+import re
 
 # Get the directory where the script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,6 +14,59 @@ project_root = os.path.dirname(script_dir)
 # File paths
 FILLED_DATA_PATH = os.path.join(script_dir, 'filled_data.xlsx')
 REPORT_PATH = os.path.join(script_dir, 'data_cleaning_report.txt')
+
+def clean_column_name(col_name):
+    """Clean column name by removing special characters and replacing spaces with underscores"""
+    cleaned = re.sub(r'[^a-zA-Z0-9]', '_', col_name)
+    cleaned = re.sub(r'_+', '_', cleaned)
+    cleaned = cleaned.strip('_')
+    return cleaned
+
+def process_age_features(df, report_file=None):
+    """Process age-related features from birthdates"""
+    message = "\nProcessing age features:\n"
+    print(message)
+    if report_file:
+        report_file.write(message)
+    
+    # Convert birthdate columns to datetime
+    date_columns = ['Big_Birthdate', 'Little_Birthdate']
+    for col in date_columns:
+        df[col] = pd.to_datetime(df[col], errors='coerce')
+    
+    # Calculate ages
+    current_year = datetime.now().year
+    
+    # Big age calculation
+    df['Big_Age'] = current_year - df['Big_Birthdate'].dt.year
+    df['Big_Age'] = df['Big_Age'].apply(lambda x: x if 18 <= x <= 100 else np.nan)
+    
+    # Little age calculation (using birthdate year)
+    df['Little_Birthdate_year'] = df['Little_Birthdate'].dt.year
+    df['Little_Birthdate_year'] = df['Little_Birthdate_year'].apply(lambda x: x if 1900 <= x <= current_year else np.nan)
+    
+    # Calculate age difference
+    df['Age_Difference'] = df['Big_Age'] - (current_year - df['Little_Birthdate_year'])
+    
+    # Create age groups for Bigs
+    age_bins = [0, 25, 35, 45, 55, 100]
+    age_labels = ['18-25', '26-35', '36-45', '46-55', '55+']
+    df['Big_Age_Group'] = pd.cut(df['Big_Age'], bins=age_bins, labels=age_labels)
+    
+    # Track missing values
+    missing_stats = {
+        'Big_Age': df['Big_Age'].isna().sum(),
+        'Little_Birthdate_year': df['Little_Birthdate_year'].isna().sum(),
+        'Age_Difference': df['Age_Difference'].isna().sum()
+    }
+    
+    # Report missing values
+    if report_file:
+        report_file.write("\nAge Feature Missing Values:\n")
+        for feature, count in missing_stats.items():
+            report_file.write(f"- {feature}: {count} missing values\n")
+    
+    return df
 
 def get_county_from_block_group(block_group):
     """Extract county name from Census Block Group ID."""
@@ -77,24 +131,24 @@ def fill_missing_geographic_data(df, report_file=None):
         
     # Track initial missing counts
     initial_missing = {
-        'Big County': df['Big County'].isna().sum(),
-        'Big Race/Ethnicity': df['Big Race/Ethnicity'].isna().sum(),
-        'Little Participant: Race/Ethnicity': df['Little Participant: Race/Ethnicity'].isna().sum()
+        'Big_County': df['Big_County'].isna().sum(),
+        'Big_Race_Ethnicity': df['Big_Race_Ethnicity'].isna().sum(),
+        'Little_Participant_Race_Ethnicity': df['Little_Participant_Race_Ethnicity'].isna().sum()
     }
     
     # Map Census Block Groups to counties where known
     block_to_county = {}
-    for idx, row in df.dropna(subset=['Big County', 'Big Home Census Block Group']).iterrows():
-        block_to_county[row['Big Home Census Block Group']] = row['Big County']
+    for idx, row in df.dropna(subset=['Big_County', 'Big_Home_Census_Block_Group']).iterrows():
+        block_to_county[row['Big_Home_Census_Block_Group']] = row['Big_County']
     
     # Fill missing counties using the mapping
-    county_mask = df['Big County'].isna() & df['Big Home Census Block Group'].notna()
-    df.loc[county_mask, 'Big County'] = df.loc[county_mask, 'Big Home Census Block Group'].map(block_to_county)
+    county_mask = df['Big_County'].isna() & df['Big_Home_Census_Block_Group'].notna()
+    df.loc[county_mask, 'Big_County'] = df.loc[county_mask, 'Big_Home_Census_Block_Group'].map(block_to_county)
     
     # Map Census Block Groups to race/ethnicity where known
     block_to_race = {}
-    for idx, row in df.dropna(subset=['Big Race/Ethnicity', 'Big Home Census Block Group']).iterrows():
-        block_to_race[row['Big Home Census Block Group']] = row['Big Race/Ethnicity']
+    for idx, row in df.dropna(subset=['Big_Race_Ethnicity', 'Big_Home_Census_Block_Group']).iterrows():
+        block_to_race[row['Big_Home_Census_Block_Group']] = row['Big_Race_Ethnicity']
     
     # Fill missing race/ethnicity using the mapping (only if we have high confidence)
     race_counts = {}
@@ -117,13 +171,13 @@ def fill_missing_geographic_data(df, report_file=None):
                 reliable_block_to_race[block] = dominant_race
     
     # Apply the reliable mapping
-    race_mask = df['Big Race/Ethnicity'].isna() & df['Big Home Census Block Group'].notna()
-    df.loc[race_mask, 'Big Race/Ethnicity'] = df.loc[race_mask, 'Big Home Census Block Group'].map(reliable_block_to_race)
+    race_mask = df['Big_Race_Ethnicity'].isna() & df['Big_Home_Census_Block_Group'].notna()
+    df.loc[race_mask, 'Big_Race_Ethnicity'] = df.loc[race_mask, 'Big_Home_Census_Block_Group'].map(reliable_block_to_race)
     
     # Apply similar logic for Little's race/ethnicity using Little's Census Block Group
     little_block_to_race = {}
-    for idx, row in df.dropna(subset=['Little Participant: Race/Ethnicity', 'Little Mailing Address Census Block Group']).iterrows():
-        little_block_to_race[row['Little Mailing Address Census Block Group']] = row['Little Participant: Race/Ethnicity']
+    for idx, row in df.dropna(subset=['Little_Participant_Race_Ethnicity', 'Little_Mailing_Address_Census_Block_Group']).iterrows():
+        little_block_to_race[row['Little_Mailing_Address_Census_Block_Group']] = row['Little_Participant_Race_Ethnicity']
     
     # Same reliability filtering as above
     race_counts = {}
@@ -144,14 +198,14 @@ def fill_missing_geographic_data(df, report_file=None):
             if dominant_count / total > 0.7 and total >= 3:
                 reliable_little_block_to_race[block] = dominant_race
     
-    little_race_mask = df['Little Participant: Race/Ethnicity'].isna() & df['Little Mailing Address Census Block Group'].notna()
-    df.loc[little_race_mask, 'Little Participant: Race/Ethnicity'] = df.loc[little_race_mask, 'Little Mailing Address Census Block Group'].map(reliable_little_block_to_race)
+    little_race_mask = df['Little_Participant_Race_Ethnicity'].isna() & df['Little_Mailing_Address_Census_Block_Group'].notna()
+    df.loc[little_race_mask, 'Little_Participant_Race_Ethnicity'] = df.loc[little_race_mask, 'Little_Mailing_Address_Census_Block_Group'].map(reliable_little_block_to_race)
     
     # Track improvements
     final_missing = {
-        'Big County': df['Big County'].isna().sum(),
-        'Big Race/Ethnicity': df['Big Race/Ethnicity'].isna().sum(),
-        'Little Participant: Race/Ethnicity': df['Little Participant: Race/Ethnicity'].isna().sum()
+        'Big_County': df['Big_County'].isna().sum(),
+        'Big_Race_Ethnicity': df['Big_Race_Ethnicity'].isna().sum(),
+        'Little_Participant_Race_Ethnicity': df['Little_Participant_Race_Ethnicity'].isna().sum()
     }
     
     # Report improvements
@@ -181,37 +235,37 @@ def fill_missing_occupation_data(df, report_file=None):
         report_file.write(message)
     
     initial_missing = {
-        'Big Occupation': df['Big Occupation'].isna().sum(),
-        'Big Level of Education': df['Big Level of Education'].isna().sum(),
+        'Big_Occupation': df['Big_Occupation'].isna().sum(),
+        'Big_Level_of_Education': df['Big_Level_of_Education'].isna().sum(),
     }
     
     # Map employer to most common occupation
     employer_to_occupation = {}
-    for employer, group in df.dropna(subset=['Big Employer', 'Big Occupation']).groupby('Big Employer'):
+    for employer, group in df.dropna(subset=['Big_Employer', 'Big_Occupation']).groupby('Big_Employer'):
         if len(group) >= 3:  # Only consider employers with at least 3 records
-            occupation_counts = group['Big Occupation'].value_counts()
+            occupation_counts = group['Big_Occupation'].value_counts()
             if not occupation_counts.empty:
                 employer_to_occupation[employer] = occupation_counts.index[0]
     
     # Fill missing occupations using employer mapping
-    occupation_mask = df['Big Occupation'].isna() & df['Big Employer'].notna()
-    occupation_before = df['Big Occupation'].isna().sum()
-    df.loc[occupation_mask, 'Big Occupation'] = df.loc[occupation_mask, 'Big Employer'].map(employer_to_occupation)
-    occupation_after = df['Big Occupation'].isna().sum()
+    occupation_mask = df['Big_Occupation'].isna() & df['Big_Employer'].notna()
+    occupation_before = df['Big_Occupation'].isna().sum()
+    df.loc[occupation_mask, 'Big_Occupation'] = df.loc[occupation_mask, 'Big_Employer'].map(employer_to_occupation)
+    occupation_after = df['Big_Occupation'].isna().sum()
     
     # Fill missing education levels based on occupation
     occupation_to_education = {}
-    for occupation, group in df.dropna(subset=['Big Occupation', 'Big Level of Education']).groupby('Big Occupation'):
+    for occupation, group in df.dropna(subset=['Big_Occupation', 'Big_Level_of_Education']).groupby('Big_Occupation'):
         if len(group) >= 3:  # Only consider occupations with at least 3 records
-            education_counts = group['Big Level of Education'].value_counts()
+            education_counts = group['Big_Level_of_Education'].value_counts()
             if not education_counts.empty:
                 occupation_to_education[occupation] = education_counts.index[0]
     
     # Apply education mapping
-    education_mask = df['Big Level of Education'].isna() & df['Big Occupation'].notna()
-    education_before = df['Big Level of Education'].isna().sum()
-    df.loc[education_mask, 'Big Level of Education'] = df.loc[education_mask, 'Big Occupation'].map(occupation_to_education)
-    education_after = df['Big Level of Education'].isna().sum()
+    education_mask = df['Big_Level_of_Education'].isna() & df['Big_Occupation'].notna()
+    education_before = df['Big_Level_of_Education'].isna().sum()
+    df.loc[education_mask, 'Big_Level_of_Education'] = df.loc[education_mask, 'Big_Occupation'].map(occupation_to_education)
+    education_after = df['Big_Level_of_Education'].isna().sum()
     
     # Report improvements
     occupation_filled = occupation_before - occupation_after
@@ -219,20 +273,20 @@ def fill_missing_occupation_data(df, report_file=None):
     
     message = ""
     if occupation_filled > 0:
-        pct_improved = (occupation_filled / initial_missing['Big Occupation']) * 100
-        message = f"  - Big Occupation: Filled {occupation_filled} missing values ({pct_improved:.1f}% improvement)\n"
+        pct_improved = (occupation_filled / initial_missing['Big_Occupation']) * 100
+        message = f"  - Big_Occupation: Filled {occupation_filled} missing values ({pct_improved:.1f}% improvement)\n"
     else:
-        message = f"  - Big Occupation: No improvement\n"
+        message = f"  - Big_Occupation: No improvement\n"
     print(message, end="")
     if report_file:
         report_file.write(message)
         
     message = ""
     if education_filled > 0:
-        pct_improved = (education_filled / initial_missing['Big Level of Education']) * 100
-        message = f"  - Big Level of Education: Filled {education_filled} missing values ({pct_improved:.1f}% improvement)\n"
+        pct_improved = (education_filled / initial_missing['Big_Level_of_Education']) * 100
+        message = f"  - Big_Level_of_Education: Filled {education_filled} missing values ({pct_improved:.1f}% improvement)\n"
     else:
-        message = f"  - Big Level of Education: No improvement\n"
+        message = f"  - Big_Level_of_Education: No improvement\n"
     print(message, end="")
     if report_file:
         report_file.write(message)
@@ -252,11 +306,11 @@ def main():
         report_file.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         report_file.write("="*80 + "\n\n")
         
-        # Step 1: County Filling
-        report_file.write("Step 1: Automatic County Filling\n")
-        report_file.write("================================\n\n")
-        print("\nStep 1: Automatic County Filling")
-        print("================================")
+        # Step 1: Initial Data Loading
+        report_file.write("Step 1: Initial Data Loading\n")
+        report_file.write("==========================\n\n")
+        print("\nStep 1: Initial Data Loading")
+        print("==========================")
         
         # Read the Excel file using an absolute path
         excel_path = os.path.join(project_root, 'Data', 'Novice.xlsx')
@@ -267,99 +321,97 @@ def main():
         print(f"Dataset shape: {df.shape}")
         report_file.write(f"Dataset shape: {df.shape}\n\n")
         
+        # Clean column names
+        df.columns = [clean_column_name(col) for col in df.columns]
+        
         # Track initial missing data
         total_missing_before = df.isna().sum().sum()
         total_cells = df.size
         report_file.write(f"Initial Missing Data:\n")
         report_file.write(f"Total missing values: {total_missing_before} ({total_missing_before/total_cells*100:.2f}%)\n\n")
         
-        # Create a dictionary to store census block to county mappings
-        block_to_county = {}
+        # Step 2: Age Feature Processing
+        report_file.write("\nStep 2: Age Feature Processing\n")
+        report_file.write("============================\n\n")
+        print("\nStep 2: Age Feature Processing")
+        print("============================")
         
-        # First pass: Build mapping from known relationships in the data
-        for idx, row in df.iterrows():
-            if pd.notna(row['Big County']) and pd.notna(row['Big Home Census Block Group']):
-                block_to_county[row['Big Home Census Block Group']] = row['Big County']
+        # Track age-related columns before processing
+        age_columns = ['Big_Birthdate', 'Little_Birthdate']
+        initial_age_missing = {col: df[col].isna().sum() for col in age_columns}
         
-        # Count missing counties before filling
-        missing_before = df['Big County'].isna().sum()
-        total_records = len(df)
+        # Process age features
+        df = process_age_features(df, report_file)
         
-        # Second pass: Fill in missing counties using block group IDs
-        filled_from_block_ids = 0
-        missing_blocks = set()
+        # Track improvements in age features
+        new_age_columns = ['Big_Age', 'Little_Birthdate_year', 'Age_Difference', 'Big_Age_Group']
+        age_improvements = {}
         
-        print("\nLooking up missing counties using Census Block Group IDs...")
-        report_file.write("Looking up missing counties using Census Block Group IDs...\n")
+        for col in new_age_columns:
+            if col in df.columns:
+                missing = df[col].isna().sum()
+                age_improvements[col] = {
+                    'Missing': missing,
+                    'Total': len(df),
+                    'Percentage': (missing/len(df))*100
+                }
         
-        for idx, row in df.iterrows():
-            if pd.isna(row['Big County']) and pd.notna(row['Big Home Census Block Group']):
-                block_group = row['Big Home Census Block Group']
-                county = get_county_from_block_group(block_group)
-                if county:
-                    df.at[idx, 'Big County'] = county
-                    filled_from_block_ids += 1
-                    if idx % 100 == 0:  # Progress update every 100 records
-                        print(f"Processed {idx+1}/{total_records} records...")
-                else:
-                    missing_blocks.add(str(block_group))
-        
-        # Count remaining missing counties after automatic filling
-        missing_final = df['Big County'].isna().sum()
-        
-        # Print final statistics
-        final_stats = {
-            "Total Records": total_records,
-            "Initially Missing": missing_before,
-            "Filled from Known Data": len(block_to_county),
-            "Filled from Block Group IDs": filled_from_block_ids,
-            "Total Filled": (missing_before - missing_final),
-            "Still Missing": missing_final,
-            "Success Rate": f"{((missing_before - missing_final)/missing_before*100):.1f}% of missing filled"
-        }
-        print_stats_box("County Filling Results", final_stats)
-        
-        # Write stats to report
-        report_file.write("\nCounty Filling Results:\n")
-        report_file.write("----------------------\n")
-        for key, value in final_stats.items():
-            report_file.write(f"{key}: {value}\n")
+        # Report age feature improvements
+        report_file.write("\nAge Feature Processing Results:\n")
+        report_file.write("-----------------------------\n")
+        for col, stats in age_improvements.items():
+            report_file.write(f"{col}:\n")
+            report_file.write(f"  - Missing values: {stats['Missing']}\n")
+            report_file.write(f"  - Total records: {stats['Total']}\n")
+            report_file.write(f"  - Missing percentage: {stats['Percentage']:.2f}%\n")
         report_file.write("\n")
         
-        # Step 2: Enhanced Data Imputation
-        report_file.write("\nStep 2: Additional Data Imputation\n")
-        report_file.write("===============================\n\n")
-        print("\nStep 2: Additional Data Imputation")
-        print("===============================")
+        # Step 3: Geographic Data Processing
+        report_file.write("\nStep 3: Geographic Data Processing\n")
+        report_file.write("================================\n\n")
+        print("\nStep 3: Geographic Data Processing")
+        print("=================================")
         
-        # Calculate initial missing data for this step
-        interim_missing = df.isna().sum().sum()
-        report_file.write(f"Missing Data Before Additional Imputation:\n")
-        report_file.write(f"Total missing values: {interim_missing} ({interim_missing/total_cells*100:.2f}%)\n\n")
-        
-        # Perform geographic data imputation
+        # Process geographic data
         df = fill_missing_geographic_data(df, report_file)
         
-        # Perform occupation data imputation
+        # Step 4: Occupation Data Processing
+        report_file.write("\nStep 4: Occupation Data Processing\n")
+        report_file.write("================================\n\n")
+        print("\nStep 4: Occupation Data Processing")
+        print("=================================")
+        
+        # Process occupation data
         df = fill_missing_occupation_data(df, report_file)
+        
+        # Final Summary
+        report_file.write("\nFinal Data Quality Summary\n")
+        report_file.write("========================\n\n")
         
         # Calculate final missing data
         total_missing_after = df.isna().sum().sum()
         cells_filled = total_missing_before - total_missing_after
-        report_file.write(f"Final Missing Data Summary:\n")
-        report_file.write(f"Total missing values: {total_missing_after} ({total_missing_after/total_cells*100:.2f}%)\n")
-        report_file.write(f"Total cells filled: {cells_filled} ({cells_filled/total_missing_before*100:.2f}% of initial missing)\n\n")
         
-        # Save the completely filled dataset
-        df.to_excel(FILLED_DATA_PATH, index=False)
-        report_file.write(f"Cleaned dataset saved to: {FILLED_DATA_PATH}\n\n")
+        # Track missing values by column
+        missing_by_column = df.isna().sum()
+        columns_with_missing = missing_by_column[missing_by_column > 0]
         
-        # Summary 
-        report_file.write("\nSummary of Improvements:\n")
-        report_file.write("=======================\n")
+        report_file.write("Missing Values by Column:\n")
+        report_file.write("----------------------\n")
+        for col, missing in columns_with_missing.items():
+            percentage = (missing/len(df))*100
+            report_file.write(f"{col}: {missing} missing ({percentage:.2f}%)\n")
+        
+        report_file.write("\nOverall Statistics:\n")
+        report_file.write("-----------------\n")
         report_file.write(f"Initial missing values: {total_missing_before} ({total_missing_before/total_cells*100:.2f}%)\n")
         report_file.write(f"Final missing values: {total_missing_after} ({total_missing_after/total_cells*100:.2f}%)\n")
-        report_file.write(f"Overall improvement: {cells_filled} cells filled ({cells_filled/total_missing_before*100:.2f}%)\n")
+        report_file.write(f"Total cells filled: {cells_filled} ({cells_filled/total_missing_before*100:.2f}% of initial missing)\n")
+        
+        # Save the processed dataset
+        print(f"\nSaving processed dataset to: {FILLED_DATA_PATH}")
+        df.to_excel(FILLED_DATA_PATH, index=False)
+        report_file.write(f"\nCleaned dataset saved to: {FILLED_DATA_PATH}\n")
         
     print("\nFiles saved:")
     print(f"- Data cleaning report: {REPORT_PATH}")

@@ -1,0 +1,130 @@
+Data Cleaning and Imputation Report
+Date: 2025-04-02 16:10:32
+================================================================================
+
+Step 1: Initial Data Loading
+==========================
+
+Reading dataset: C:\Users\solo\Desktop\Repos\MinMUDAC2025\Data\Novice.xlsx
+Dataset shape: (3275, 66)
+
+Initial Missing Data:
+Total missing values: 118097 (54.64%)
+
+
+Step 2: Age Feature Processing
+============================
+
+
+Processing age features:
+
+Age Feature Missing Values:
+- Big_Age: 0 missing values
+- Little_Birthdate_year: 0 missing values
+- Age_Difference: 0 missing values
+
+Age Feature Processing Results:
+-----------------------------
+Big_Age:
+  - Missing values: 0
+  - Total records: 3275
+  - Missing percentage: 0.00%
+Little_Birthdate_year:
+  - Missing values: 0
+  - Total records: 3275
+  - Missing percentage: 0.00%
+Age_Difference:
+  - Missing values: 0
+  - Total records: 3275
+  - Missing percentage: 0.00%
+Big_Age_Group:
+  - Missing values: 0
+  - Total records: 3275
+  - Missing percentage: 0.00%
+
+
+Step 3: Geographic Data Processing
+================================
+
+Performing geographic data imputation:
+  - Big_County: Filled 286 missing values (43.7% improvement)
+  - Big_Race_Ethnicity: No improvement
+  - Little_Participant_Race_Ethnicity: No improvement
+
+
+Step 4: Occupation Data Processing
+================================
+
+Performing occupation data imputation:
+  - Big_Occupation: Filled 13 missing values (4.0% improvement)
+  - Big_Level_of_Education: Filled 1953 missing values (69.1% improvement)
+
+
+Final Data Quality Summary
+========================
+
+Missing Values by Column:
+----------------------
+Big_County: 369 missing (11.27%)
+Big_Occupation: 312 missing (9.53%)
+Big_Military: 2044 missing (62.41%)
+Big_Approved_Date: 291 missing (8.89%)
+Big_Level_of_Education: 872 missing (26.63%)
+Big_Languages: 1512 missing (46.17%)
+Big_Gender: 1 missing (0.03%)
+Big_Employer: 551 missing (16.82%)
+Big_Race_Ethnicity: 33 missing (1.01%)
+Closure_Reason: 786 missing (24.00%)
+Closure_Details: 1391 missing (42.47%)
+Match_Closure_Meeting_Date: 2544 missing (77.68%)
+Rationale_for_Match: 299 missing (9.13%)
+Big_Enrollment_Record_Type: 1902 missing (58.08%)
+Big_Assessment_Uploaded: 1903 missing (58.11%)
+Big_Acceptance_Date: 1903 missing (58.11%)
+Big_Car_Access: 3158 missing (96.43%)
+Big_Days_Acceptance_to_Match: 2411 missing (73.62%)
+Big_Days_Interview_to_Acceptance: 1903 missing (58.11%)
+Big_Days_Interview_to_Match: 2411 missing (73.62%)
+Big_Open_to_Cross_Gender_Match: 3238 missing (98.87%)
+Big_Re_Enroll: 1902 missing (58.08%)
+Big_Contact_Preferred_Communication_Type: 3148 missing (96.12%)
+Big_Contact_Former_Big_Little: 3211 missing (98.05%)
+Big_Contact_Interest_Finder_Sports: 3248 missing (99.18%)
+Big_Contact_Interest_Finder_Places_To_Go: 3248 missing (99.18%)
+Big_Contact_Interest_Finder_Hobbies: 3248 missing (99.18%)
+Big_Contact_Interest_Finder_Entertainment: 3248 missing (99.18%)
+Big_Contact_Created_Date: 1902 missing (58.08%)
+Big_Enrollment_Created_Date: 1902 missing (58.08%)
+Big_Contact_Volunteer_Availability: 2998 missing (91.54%)
+Big_Contact_Marital_Status: 1960 missing (59.85%)
+Little_RTBM_Date_in_MF: 3027 missing (92.43%)
+Little_RTBM_in_Matchforce: 1904 missing (58.14%)
+Little_Moved_to_RTBM_in_MF: 1904 missing (58.14%)
+Little_Application_Received: 1904 missing (58.14%)
+Little_Contact_Language_s_Spoken: 3237 missing (98.84%)
+Little_Interview_Date: 1907 missing (58.23%)
+Little_Acceptance_Date: 1905 missing (58.17%)
+Little_Contact_Interest_Finder_Sports: 3195 missing (97.56%)
+Little_Contact_Interest_Finder_Outdoors: 3195 missing (97.56%)
+Little_Contact_Interest_Finder_Arts: 3195 missing (97.56%)
+Little_Contact_Interest_Finder_Places_To_Go: 3195 missing (97.56%)
+Little_Contact_Interest_Finder_Hobbies: 3195 missing (97.56%)
+Little_Contact_Interest_Finder_Entertainment: 3195 missing (97.56%)
+Little_Contact_Interest_Finder_Other_Interests: 3243 missing (99.02%)
+Little_Other_Interests: 2959 missing (90.35%)
+Little_Contact_Interest_Finder_Career: 3203 missing (97.80%)
+Little_Contact_Interest_Finder_Personality: 3195 missing (97.56%)
+Little_Contact_Interest_Finder_Three_Wishes: 3203 missing (97.80%)
+Little_Gender: 1 missing (0.03%)
+Little_Participant_Race_Ethnicity: 105 missing (3.21%)
+Little_Mailing_Address_Census_Block_Group: 966 missing (29.50%)
+Big_Home_Census_Block_Group: 1005 missing (30.69%)
+Big_Employer_School_Census_Block_Group: 3158 missing (96.43%)
+
+Overall Statistics:
+-----------------
+Initial missing values: 118097 (54.64%)
+Final missing values: 115845 (53.59%)
+Total cells filled: 2252 (1.91% of initial missing)
+
+Cleaned dataset saved to: C:\Users\solo\Desktop\Repos\MinMUDAC2025\data_clean_and_run\filled_data.xlsx

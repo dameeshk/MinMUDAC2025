@@ -1,0 +1,219 @@
+Dataset Comparison Results
+=========================
+
+Training dataset (filled_data.xlsx):
+Number of columns: 69
+Columns:
+- Age_Difference
+- Big_Acceptance_Date
+- Big_Age
+- Big_Age_Group
+- Big_Approved_Date
+- Big_Assessment_Uploaded
+- Big_Birthdate
+- Big_Car_Access
+- Big_Contact_Created_Date
+- Big_Contact_Former_Big_Little
+- Big_Contact_Interest_Finder_Entertainment
+- Big_Contact_Interest_Finder_Hobbies
+- Big_Contact_Interest_Finder_Places_To_Go
+- Big_Contact_Interest_Finder_Sports
+- Big_Contact_Marital_Status
+- Big_Contact_Preferred_Communication_Type
+- Big_Contact_Volunteer_Availability
+- Big_County
+- Big_Days_Acceptance_to_Match
+- Big_Days_Interview_to_Acceptance
+- Big_Days_Interview_to_Match
+- Big_Employer
+- Big_Employer_School_Census_Block_Group
+- Big_Enrollment_Created_Date
+- Big_Enrollment_Record_Type
+- Big_Gender
+- Big_Home_Census_Block_Group
+- Big_ID
+- Big_Languages
+- Big_Level_of_Education
+- Big_Military
+- Big_Occupation
+- Big_Open_to_Cross_Gender_Match
+- Big_Race_Ethnicity
+- Big_Re_Enroll
+- Closure_Details
+- Closure_Reason
+- Little_Acceptance_Date
+- Little_Application_Received
+- Little_Birthdate
+- Little_Birthdate_year
+- Little_Contact_Interest_Finder_Arts
+- Little_Contact_Interest_Finder_Career
+- Little_Contact_Interest_Finder_Entertainment
+- Little_Contact_Interest_Finder_Hobbies
+- Little_Contact_Interest_Finder_Other_Interests
+- Little_Contact_Interest_Finder_Outdoors
+- Little_Contact_Interest_Finder_Personality
+- Little_Contact_Interest_Finder_Places_To_Go
+- Little_Contact_Interest_Finder_Sports
+- Little_Contact_Interest_Finder_Three_Wishes
+- Little_Contact_Language_s_Spoken
+- Little_Gender
+- Little_ID
+- Little_Interview_Date
+- Little_Mailing_Address_Census_Block_Group
+- Little_Moved_to_RTBM_in_MF
+- Little_Other_Interests
+- Little_Participant_Race_Ethnicity
+- Little_RTBM_Date_in_MF
+- Little_RTBM_in_Matchforce
+- Match_Activation_Date
+- Match_Closure_Meeting_Date
+- Match_ID_18Char
+- Match_Length
+- Program
+- Program_Type
+- Rationale_for_Match
+- Stage
+
+Test dataset (Test-Truncated-Restated.xlsx):
+Number of columns: 63
+Columns:
+- Big Acceptance Date
+- Big Age
+- Big Approved Date
+- Big Assessment Uploaded
+- Big Birthdate
+- Big Car Access
+- Big Contact: Created Date
+- Big Contact: Former Big/Little
+- Big Contact: Interest Finder - Entertainment
+- Big Contact: Interest Finder - Hobbies
+- Big Contact: Interest Finder - Places To Go
+- Big Contact: Interest Finder - Sports
+- Big Contact: Marital Status
+- Big Contact: Preferred Communication Type
+- Big Contact: Volunteer Availability
+- Big County
+- Big Days Acceptance to Match
+- Big Days Interview to Acceptance
+- Big Days Interview to Match
+- Big Employer
+- Big Employer/School Census Block Group
+- Big Enrollment: Created Date
+- Big Enrollment: Record Type
+- Big Gender
+- Big Home Census Block Group
+- Big ID
+- Big Languages
+- Big Level of Education
+- Big Occupation
+- Big Open to Cross-Gender Match
+- Big Race/Ethnicity
+- Big Re-Enroll
+- Big: Military
+- Completion Date
+- Little Acceptance Date
+- Little Application Received
+- Little Birthdate
+- Little Contact: Interest Finder - Arts
+- Little Contact: Interest Finder - Career
+- Little Contact: Interest Finder - Entertainment
+- Little Contact: Interest Finder - Hobbies
+- Little Contact: Interest Finder - Other Interests
+- Little Contact: Interest Finder - Outdoors
+- Little Contact: Interest Finder - Personality
+- Little Contact: Interest Finder - Places To Go
+- Little Contact: Interest Finder - Sports
+- Little Contact: Interest Finder - Three Wishes
+- Little Contact: Language(s) Spoken
+- Little Gender
+- Little ID
+- Little Interview Date
+- Little Mailing Address Census Block Group
+- Little Moved to RTBM in MF
+- Little Other Interests
+- Little Participant: Race/Ethnicity
+- Little RTBM Date in MF
+- Little RTBM in Matchforce
+- Match Activation Date
+- Match ID 18Char
+- Match Support Contact Notes
+- Program
+- Program Type
+- Rationale for Match
+
+Columns in training but not in test (8):
+- Age_Difference
+- Big_Age_Group
+- Closure_Details
+- Closure_Reason
+- Little_Birthdate_year
+- Match_Closure_Meeting_Date
+- Match_Length
+- Stage
+
+Columns in test but not in training (2):
+- Completion_Date
+- Match_Support_Contact_Notes
+
+Common columns (61):
+- Big_Acceptance_Date
+- Big_Age
+- Big_Approved_Date
+- Big_Assessment_Uploaded
+- Big_Birthdate
+- Big_Car_Access
+- Big_Contact_Created_Date
+- Big_Contact_Former_Big_Little
+- Big_Contact_Interest_Finder_Entertainment
+- Big_Contact_Interest_Finder_Hobbies
+- Big_Contact_Interest_Finder_Places_To_Go
+- Big_Contact_Interest_Finder_Sports
+- Big_Contact_Marital_Status
+- Big_Contact_Preferred_Communication_Type
+- Big_Contact_Volunteer_Availability
+- Big_County
+- Big_Days_Acceptance_to_Match
+- Big_Days_Interview_to_Acceptance
+- Big_Days_Interview_to_Match
+- Big_Employer
+- Big_Employer_School_Census_Block_Group
+- Big_Enrollment_Created_Date
+- Big_Enrollment_Record_Type
+- Big_Gender
+- Big_Home_Census_Block_Group
+- Big_ID
+- Big_Languages
+- Big_Level_of_Education
+- Big_Military
+- Big_Occupation
+- Big_Open_to_Cross_Gender_Match
+- Big_Race_Ethnicity
+- Big_Re_Enroll
+- Little_Acceptance_Date
+- Little_Application_Received
+- Little_Birthdate
+- Little_Contact_Interest_Finder_Arts
+- Little_Contact_Interest_Finder_Career
+- Little_Contact_Interest_Finder_Entertainment
+- Little_Contact_Interest_Finder_Hobbies
+- Little_Contact_Interest_Finder_Other_Interests
+- Little_Contact_Interest_Finder_Outdoors
+- Little_Contact_Interest_Finder_Personality
+- Little_Contact_Interest_Finder_Places_To_Go
+- Little_Contact_Interest_Finder_Sports
+- Little_Contact_Interest_Finder_Three_Wishes
+- Little_Contact_Language_s_Spoken
+- Little_Gender
+- Little_ID
+- Little_Interview_Date
+- Little_Mailing_Address_Census_Block_Group
+- Little_Moved_to_RTBM_in_MF
+- Little_Other_Interests
+- Little_Participant_Race_Ethnicity
+- Little_RTBM_Date_in_MF
+- Little_RTBM_in_Matchforce
+- Match_Activation_Date
+- Match_ID_18Char
+- Program
+- Program_Type
+- Rationale_for_Match

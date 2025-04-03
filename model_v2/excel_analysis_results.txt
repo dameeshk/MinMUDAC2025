@@ -1,0 +1,6 @@
+Analyzing Excel file: C:\Users\solo\Desktop\Repos\MinMUDAC2025\model_v2\filled_data.xlsx
+Analysis timestamp: 2025-04-03 12:43:03
+
+================================================================================
+
+Error: File 'C:\Users\solo\Desktop\Repos\MinMUDAC2025\model_v2\filled_data.xlsx' does not exist.

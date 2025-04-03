@@ -1,0 +1,70 @@
+Starting model training process...
+Timestamp: 2025-04-03 11:15:42
+
+Loading and preprocessing training data...
+
+Training models...
+
+Tuning Random Forest hyperparameters...
+
+Random Forest Results:
+Best Parameters: {'model__max_depth': 15, 'model__max_features': 'log2', 'model__min_samples_leaf': 2, 'model__min_samples_split': 10, 'model__n_estimators': 200}
+Cross-validation RMSE: 17.6461
+Test R2 Score: 0.2316
+Test RMSE: 17.3593
+Test MSE: 301.3469
+
+Top 20 Most Important Features for remainder:
+                          Feature  Importance
+39                             26    0.092892
+18                              5    0.073707
+29                             16    0.054973
+10          Total_Processing_Time    0.051963
+25                             12    0.047366
+0                         Big_Age    0.044288
+2           Little_Birthdate_year    0.041756
+8                       Age_Ratio    0.035942
+28                             15    0.035168
+5    Days_Interview_to_Acceptance    0.033652
+42                             29    0.032809
+24                             11    0.029111
+9                      Little_Age    0.027070
+11          Processing_Time_Ratio    0.026668
+1                  Age_Difference    0.026441
+7          Age_Difference_Squared    0.025439
+33                             20    0.023524
+13                              0    0.023368
+4   Days_Application_to_Interview    0.021939
+34                             21    0.021145
+
+Tuning XGBoost hyperparameters...
+
+XGBoost Results:
+Best Parameters: {'model__colsample_bytree': 0.8, 'model__learning_rate': 0.01, 'model__max_depth': 4, 'model__max_features': 'sqrt', 'model__min_child_weight': 5, 'model__n_estimators': 400, 'model__subsample': 0.9}
+Cross-validation RMSE: 17.6448
+Test R2 Score: 0.2298
+Test RMSE: 17.3793
+Test MSE: 302.0415
+
+Top 20 Most Important Features for remainder:
+                         Feature  Importance
+39                            26    0.111848
+29                            16    0.057806
+10         Total_Processing_Time    0.056241
+26                            13    0.054121
+33                            20    0.048531
+18                             5    0.044213
+25                            12    0.039533
+28                            15    0.030230
+42                            29    0.029994
+24                            11    0.028516
+17                             4    0.027277
+9                     Little_Age    0.026572
+5   Days_Interview_to_Acceptance    0.025989
+34                            21    0.024765
+2          Little_Birthdate_year    0.024741
+11         Processing_Time_Ratio    0.021326
+0                        Big_Age    0.019905
+27                            14    0.019703
+32                            19    0.019589
+41                            28    0.018627

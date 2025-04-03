@@ -1,0 +1,650 @@
+Analyzing Excel file: C:\Users\solo\Desktop\Repos\MinMUDAC2025\data_clean_and_run\filled_data.xlsx
+Analysis timestamp: 2025-04-02 20:31:54
+
+================================================================================
+
+Reading Excel file...
+
+## BASIC INFORMATION ##
+Number of rows: 3275
+Number of columns: 69
+
+## COLUMN INFORMATION ##
+
+Column Names:
+  1. Match_ID_18Char
+  2. Stage
+  3. Little_ID
+  4. Big_ID
+  5. Big_County
+  6. Big_Age
+  7. Big_Occupation
+  8. Big_Military
+  9. Big_Approved_Date
+  10. Big_Level_of_Education
+  11. Big_Languages
+  12. Big_Gender
+  13. Big_Birthdate
+  14. Big_Employer
+  15. Program
+  16. Program_Type
+  17. Big_Race_Ethnicity
+  18. Closure_Reason
+  19. Closure_Details
+  20. Match_Activation_Date
+  21. Match_Closure_Meeting_Date
+  22. Rationale_for_Match
+  23. Big_Enrollment_Record_Type
+  24. Big_Assessment_Uploaded
+  25. Big_Acceptance_Date
+  26. Big_Car_Access
+  27. Big_Days_Acceptance_to_Match
+  28. Big_Days_Interview_to_Acceptance
+  29. Big_Days_Interview_to_Match
+  30. Big_Open_to_Cross_Gender_Match
+  31. Big_Re_Enroll
+  32. Big_Contact_Preferred_Communication_Type
+  33. Big_Contact_Former_Big_Little
+  34. Big_Contact_Interest_Finder_Sports
+  35. Big_Contact_Interest_Finder_Places_To_Go
+  36. Big_Contact_Interest_Finder_Hobbies
+  37. Big_Contact_Interest_Finder_Entertainment
+  38. Big_Contact_Created_Date
+  39. Big_Enrollment_Created_Date
+  40. Big_Contact_Volunteer_Availability
+  41. Big_Contact_Marital_Status
+  42. Little_RTBM_Date_in_MF
+  43. Little_RTBM_in_Matchforce
+  44. Little_Moved_to_RTBM_in_MF
+  45. Little_Application_Received
+  46. Little_Contact_Language_s_Spoken
+  47. Little_Interview_Date
+  48. Little_Acceptance_Date
+  49. Little_Contact_Interest_Finder_Sports
+  50. Little_Contact_Interest_Finder_Outdoors
+  51. Little_Contact_Interest_Finder_Arts
+  52. Little_Contact_Interest_Finder_Places_To_Go
+  53. Little_Contact_Interest_Finder_Hobbies
+  54. Little_Contact_Interest_Finder_Entertainment
+  55. Little_Contact_Interest_Finder_Other_Interests
+  56. Little_Other_Interests
+  57. Little_Contact_Interest_Finder_Career
+  58. Little_Contact_Interest_Finder_Personality
+  59. Little_Contact_Interest_Finder_Three_Wishes
+  60. Little_Gender
+  61. Little_Participant_Race_Ethnicity
+  62. Little_Birthdate
+  63. Little_Mailing_Address_Census_Block_Group
+  64. Big_Home_Census_Block_Group
+  65. Big_Employer_School_Census_Block_Group
+  66. Match_Length
+  67. Little_Birthdate_year
+  68. Age_Difference
+  69. Big_Age_Group
+
+Data Types:
+  Match_ID_18Char: object
+  Stage: object
+  Little_ID: object
+  Big_ID: object
+  Big_County: object
+  Big_Age: int64
+  Big_Occupation: object
+  Big_Military: object
+  Big_Approved_Date: datetime64[ns]
+  Big_Level_of_Education: object
+  Big_Languages: object
+  Big_Gender: object
+  Big_Birthdate: datetime64[ns]
+  Big_Employer: object
+  Program: object
+  Program_Type: object
+  Big_Race_Ethnicity: object
+  Closure_Reason: object
+  Closure_Details: object
+  Match_Activation_Date: datetime64[ns]
+  Match_Closure_Meeting_Date: datetime64[ns]
+  Rationale_for_Match: object
+  Big_Enrollment_Record_Type: object
+  Big_Assessment_Uploaded: datetime64[ns]
+  Big_Acceptance_Date: datetime64[ns]
+  Big_Car_Access: object
+  Big_Days_Acceptance_to_Match: float64
+  Big_Days_Interview_to_Acceptance: float64
+  Big_Days_Interview_to_Match: float64
+  Big_Open_to_Cross_Gender_Match: object
+  Big_Re_Enroll: float64
+  Big_Contact_Preferred_Communication_Type: object
+  Big_Contact_Former_Big_Little: object
+  Big_Contact_Interest_Finder_Sports: object
+  Big_Contact_Interest_Finder_Places_To_Go: object
+  Big_Contact_Interest_Finder_Hobbies: object
+  Big_Contact_Interest_Finder_Entertainment: object
+  Big_Contact_Created_Date: datetime64[ns]
+  Big_Enrollment_Created_Date: datetime64[ns]
+  Big_Contact_Volunteer_Availability: object
+  Big_Contact_Marital_Status: object
+  Little_RTBM_Date_in_MF: datetime64[ns]
+  Little_RTBM_in_Matchforce: float64
+  Little_Moved_to_RTBM_in_MF: float64
+  Little_Application_Received: datetime64[ns]
+  Little_Contact_Language_s_Spoken: object
+  Little_Interview_Date: datetime64[ns]
+  Little_Acceptance_Date: datetime64[ns]
+  Little_Contact_Interest_Finder_Sports: object
+  Little_Contact_Interest_Finder_Outdoors: object
+  Little_Contact_Interest_Finder_Arts: object
+  Little_Contact_Interest_Finder_Places_To_Go: object
+  Little_Contact_Interest_Finder_Hobbies: object
+  Little_Contact_Interest_Finder_Entertainment: object
+  Little_Contact_Interest_Finder_Other_Interests: object
+  Little_Other_Interests: object
+  Little_Contact_Interest_Finder_Career: object
+  Little_Contact_Interest_Finder_Personality: object
+  Little_Contact_Interest_Finder_Three_Wishes: object
+  Little_Gender: object
+  Little_Participant_Race_Ethnicity: object
+  Little_Birthdate: datetime64[ns]
+  Little_Mailing_Address_Census_Block_Group: float64
+  Big_Home_Census_Block_Group: float64
+  Big_Employer_School_Census_Block_Group: float64
+  Match_Length: float64
+  Little_Birthdate_year: int64
+  Age_Difference: int64
+  Big_Age_Group: object
+
+## MISSING VALUES ##
+
+Missing Values by Column:
+  Match_ID_18Char: 0 missing values (0.00%)
+  Stage: 0 missing values (0.00%)
+  Little_ID: 0 missing values (0.00%)
+  Big_ID: 0 missing values (0.00%)
+  Big_County: 369 missing values (11.27%)
+  Big_Age: 0 missing values (0.00%)
+  Big_Occupation: 312 missing values (9.53%)
+  Big_Military: 2044 missing values (62.41%)
+  Big_Approved_Date: 291 missing values (8.89%)
+  Big_Level_of_Education: 872 missing values (26.63%)
+  Big_Languages: 1512 missing values (46.17%)
+  Big_Gender: 1 missing values (0.03%)
+  Big_Birthdate: 0 missing values (0.00%)
+  Big_Employer: 551 missing values (16.82%)
+  Program: 0 missing values (0.00%)
+  Program_Type: 0 missing values (0.00%)
+  Big_Race_Ethnicity: 33 missing values (1.01%)
+  Closure_Reason: 786 missing values (24.00%)
+  Closure_Details: 1391 missing values (42.47%)
+  Match_Activation_Date: 0 missing values (0.00%)
+  Match_Closure_Meeting_Date: 2544 missing values (77.68%)
+  Rationale_for_Match: 299 missing values (9.13%)
+  Big_Enrollment_Record_Type: 1902 missing values (58.08%)
+  Big_Assessment_Uploaded: 1903 missing values (58.11%)
+  Big_Acceptance_Date: 1903 missing values (58.11%)
+  Big_Car_Access: 3158 missing values (96.43%)
+  Big_Days_Acceptance_to_Match: 2411 missing values (73.62%)
+  Big_Days_Interview_to_Acceptance: 1903 missing values (58.11%)
+  Big_Days_Interview_to_Match: 2411 missing values (73.62%)
+  Big_Open_to_Cross_Gender_Match: 3238 missing values (98.87%)
+  Big_Re_Enroll: 1902 missing values (58.08%)
+  Big_Contact_Preferred_Communication_Type: 3148 missing values (96.12%)
+  Big_Contact_Former_Big_Little: 3211 missing values (98.05%)
+  Big_Contact_Interest_Finder_Sports: 3248 missing values (99.18%)
+  Big_Contact_Interest_Finder_Places_To_Go: 3248 missing values (99.18%)
+  Big_Contact_Interest_Finder_Hobbies: 3248 missing values (99.18%)
+  Big_Contact_Interest_Finder_Entertainment: 3248 missing values (99.18%)
+  Big_Contact_Created_Date: 1902 missing values (58.08%)
+  Big_Enrollment_Created_Date: 1902 missing values (58.08%)
+  Big_Contact_Volunteer_Availability: 2998 missing values (91.54%)
+  Big_Contact_Marital_Status: 1960 missing values (59.85%)
+  Little_RTBM_Date_in_MF: 3027 missing values (92.43%)
+  Little_RTBM_in_Matchforce: 1904 missing values (58.14%)
+  Little_Moved_to_RTBM_in_MF: 1904 missing values (58.14%)
+  Little_Application_Received: 1904 missing values (58.14%)
+  Little_Contact_Language_s_Spoken: 3237 missing values (98.84%)
+  Little_Interview_Date: 1907 missing values (58.23%)
+  Little_Acceptance_Date: 1905 missing values (58.17%)
+  Little_Contact_Interest_Finder_Sports: 3195 missing values (97.56%)
+  Little_Contact_Interest_Finder_Outdoors: 3195 missing values (97.56%)
+  Little_Contact_Interest_Finder_Arts: 3195 missing values (97.56%)
+  Little_Contact_Interest_Finder_Places_To_Go: 3195 missing values (97.56%)
+  Little_Contact_Interest_Finder_Hobbies: 3195 missing values (97.56%)
+  Little_Contact_Interest_Finder_Entertainment: 3195 missing values (97.56%)
+  Little_Contact_Interest_Finder_Other_Interests: 3243 missing values (99.02%)
+  Little_Other_Interests: 2959 missing values (90.35%)
+  Little_Contact_Interest_Finder_Career: 3203 missing values (97.80%)
+  Little_Contact_Interest_Finder_Personality: 3195 missing values (97.56%)
+  Little_Contact_Interest_Finder_Three_Wishes: 3203 missing values (97.80%)
+  Little_Gender: 1 missing values (0.03%)
+  Little_Participant_Race_Ethnicity: 105 missing values (3.21%)
+  Little_Birthdate: 0 missing values (0.00%)
+  Little_Mailing_Address_Census_Block_Group: 966 missing values (29.50%)
+  Big_Home_Census_Block_Group: 1005 missing values (30.69%)
+  Big_Employer_School_Census_Block_Group: 3158 missing values (96.43%)
+  Match_Length: 0 missing values (0.00%)
+  Little_Birthdate_year: 0 missing values (0.00%)
+  Age_Difference: 0 missing values (0.00%)
+  Big_Age_Group: 0 missing values (0.00%)
+
+Total missing values: 115845 out of 225975 cells (51.26%)
+
+## STATISTICAL SUMMARY ##
+
+Numeric Columns Summary:
+
+  Big_Age:
+    Min: 20
+    Max: 81
+    Mean: 36.19053435114504
+    Median: 33.0
+    Standard Deviation: 10.870666151592486
+
+  Big_Days_Acceptance_to_Match:
+    Min: -298.0
+    Max: 1132.0
+    Mean: 113.48842592592592
+    Median: 57.0
+    Standard Deviation: 151.66805968754596
+
+  Big_Days_Interview_to_Acceptance:
+    Min: 0.0
+    Max: 1617.0
+    Mean: 58.29081632653061
+    Median: 32.0
+    Standard Deviation: 115.06131611259343
+
+  Big_Days_Interview_to_Match:
+    Min: 17.0
+    Max: 1319.0
+    Mean: 177.67013888888889
+    Median: 111.0
+    Standard Deviation: 193.608919373986
+
+  Big_Re_Enroll:
+    Min: 0.0
+    Max: 1.0
+    Mean: 0.01747997086671522
+    Median: 0.0
+    Standard Deviation: 0.1310989675212217
+
+  Little_RTBM_in_Matchforce:
+    Min: 0.0
+    Max: 1.0
+    Mean: 0.019693654266958426
+    Median: 0.0
+    Standard Deviation: 0.13899606499390502
+
+  Little_Moved_to_RTBM_in_MF:
+    Min: 1.0
+    Max: 1.0
+    Mean: 1.0
+    Median: 1.0
+    Standard Deviation: 0.0
+
+  Little_Mailing_Address_Census_Block_Group:
+    Min: 270030501081.0
+    Max: 551091209052.0
+    Mean: 270901033916.06757
+    Median: 270530268163.0
+    Standard Deviation: 7316971799.148533
+
+  Big_Home_Census_Block_Group:
+    Min: 60376707011.0
+    Max: 551091209043.0
+    Mean: 271548958754.50616
+    Median: 270531025002.5
+    Standard Deviation: 20677673164.996967
+
+  Big_Employer_School_Census_Block_Group:
+    Min: 50014804002.0
+    Max: 720133011001.0
+    Mean: 292074904807.12823
+    Median: 270530270024.0
+    Standard Deviation: 103376108646.50609
+
+  Match_Length:
+    Min: 0.0
+    Max: 97.2
+    Mean: 23.38381679389313
+    Median: 16.8
+    Standard Deviation: 19.704251021934148
+
+  Little_Birthdate_year:
+    Min: 2000
+    Max: 2017
+    Mean: 2008.913893129771
+    Median: 2009.0
+    Standard Deviation: 2.645157737662402
+
+  Age_Difference:
+    Min: 4
+    Max: 70
+    Mean: 20.10442748091603
+    Median: 17.0
+    Standard Deviation: 10.873351633640219
+
+## CATEGORICAL COLUMNS ##
+
+  Match_ID_18Char:
+    Unique values: 3275
+
+  Stage:
+    Unique values: 3
+    Value counts:
+      Closed: 2486 (75.91%)
+      Active: 774 (23.63%)
+      Pending Closure: 15 (0.46%)
+
+  Little_ID:
+    Unique values: 2998
+
+  Big_ID:
+    Unique values: 3080
+
+  Big_County:
+    Unique values: 54
+
+  Big_Occupation:
+    Unique values: 87
+
+  Big_Military:
+    Unique values: 3
+    Value counts:
+      No: 1183 (36.12%)
+      Yes - Retired/Vet: 40 (1.22%)
+      Yes - Active: 8 (0.24%)
+
+  Big_Level_of_Education:
+    Unique values: 9
+    Value counts:
+      Bachelors Degree: 1442 (44.03%)
+      High School Graduate: 374 (11.42%)
+      Masters Degree: 292 (8.92%)
+      Some High School: 127 (3.88%)
+      Some College: 71 (2.17%)
+      Doctor of Medicine (MD): 33 (1.01%)
+      Juris Doctorate (JD): 33 (1.01%)
+      Associate Degree: 26 (0.79%)
+      PHD: 5 (0.15%)
+
+  Big_Languages:
+    Unique values: 29
+
+  Big_Gender:
+    Unique values: 6
+    Value counts:
+      Female: 1955 (59.69%)
+      Male: 1306 (39.88%)
+      Genderqueer/Nonbinary: 9 (0.27%)
+      Trans Male: 2 (0.06%)
+      Prefer not to say: 1 (0.03%)
+      Trans Female: 1 (0.03%)
+
+  Big_Employer:
+    Unique values: 1624
+
+  Program:
+    Unique values: 34
+
+  Program_Type:
+    Unique values: 4
+    Value counts:
+      Community: 2420 (73.89%)
+      Site: 570 (17.40%)
+      Site Based Facilitated: 282 (8.61%)
+      Site Based Plus: 3 (0.09%)
+
+  Big_Race_Ethnicity:
+    Unique values: 20
+
+  Closure_Reason:
+    Unique values: 33
+
+  Closure_Details:
+    Unique values: 1756
+
+  Rationale_for_Match:
+    Unique values: 2803
+
+  Big_Enrollment_Record_Type:
+    Unique values: 5
+    Value counts:
+      CB Volunteer Enrollment: 1159 (35.39%)
+      BSW Volunteer Enrollment: 78 (2.38%)
+      SB College Volunteer Enrollment: 57 (1.74%)
+      SB Adult Volunteer: 46 (1.40%)
+      City Works Volunteer Enrollment: 33 (1.01%)
+
+  Big_Car_Access:
+    Unique values: 3
+    Value counts:
+      0: 47 (1.44%)
+      No: 41 (1.25%)
+      Yes: 29 (0.89%)
+
+  Big_Open_to_Cross_Gender_Match:
+    Unique values: 2
+    Value counts:
+      Yes: 34 (1.04%)
+      No: 3 (0.09%)
+
+  Big_Contact_Preferred_Communication_Type:
+    Unique values: 3
+    Value counts:
+      Email: 52 (1.59%)
+      Text Message: 49 (1.50%)
+      Phone: 26 (0.79%)
+
+  Big_Contact_Former_Big_Little:
+    Unique values: 2
+    Value counts:
+      Former Big: 59 (1.80%)
+      Former Little: 5 (0.15%)
+
+  Big_Contact_Interest_Finder_Sports:
+    Unique values: 23
+
+  Big_Contact_Interest_Finder_Places_To_Go:
+    Unique values: 11
+    Value counts:
+      Gym; Humane Society; Library; Museums; Out to eat; Parks; Zoo: 9 (0.27%)
+      Humane Society; Library; Museums; Out to eat; Parks; Zoo: 6 (0.18%)
+      Gym; Out to eat; Parks; Zoo: 3 (0.09%)
+      Library; Museums; Out to eat; Parks; Zoo: 2 (0.06%)
+      Gym; Library; Museums; Out to eat; Parks; Zoo: 1 (0.03%)
+      Museums; Out to eat; Parks: 1 (0.03%)
+      Gym; Out to eat: 1 (0.03%)
+      Gym; Humane Society; Museums; Out to eat; Parks; Zoo: 1 (0.03%)
+      Museums; Out to eat; Parks; Zoo: 1 (0.03%)
+      Gym; Museums; Parks; Zoo: 1 (0.03%)
+      Gym; Library; Museums; Out to eat; Parks; None/Other: 1 (0.03%)
+
+  Big_Contact_Interest_Finder_Hobbies:
+    Unique values: 22
+
+  Big_Contact_Interest_Finder_Entertainment:
+    Unique values: 20
+
+  Big_Contact_Volunteer_Availability:
+    Unique values: 13
+    Value counts:
+      Evening; Weekends: 122 (3.73%)
+      Afternoon; Evening; Weekends: 37 (1.13%)
+      Morning; Afternoon; Evening; Weekends: 35 (1.07%)
+      Evening: 25 (0.76%)
+      Weekends: 19 (0.58%)
+      Afternoon; Evening: 14 (0.43%)
+      Morning; Afternoon; Evening: 10 (0.31%)
+      Afternoon: 3 (0.09%)
+      Morning; Evening; Weekends: 3 (0.09%)
+      Morning; Afternoon; Weekends: 3 (0.09%)
+      Afternoon; Weekends: 2 (0.06%)
+      Morning: 2 (0.06%)
+      Morning; Afternoon: 2 (0.06%)
+
+  Big_Contact_Marital_Status:
+    Unique values: 8
+    Value counts:
+      Single: 651 (19.88%)
+      Married: 376 (11.48%)
+      Living w/ Significant Other: 178 (5.44%)
+      Divorced: 60 (1.83%)
+      Domestic Partner: 23 (0.70%)
+      Other: 11 (0.34%)
+      Separated: 10 (0.31%)
+      Widowed: 6 (0.18%)
+
+  Little_Contact_Language_s_Spoken:
+    Unique values: 3
+    Value counts:
+      Spanish: 34 (1.04%)
+      Hmong: 3 (0.09%)
+      American Sign Language: 1 (0.03%)
+
+  Little_Contact_Interest_Finder_Sports:
+    Unique values: 46
+
+  Little_Contact_Interest_Finder_Outdoors:
+    Unique values: 41
+
+  Little_Contact_Interest_Finder_Arts:
+    Unique values: 32
+
+  Little_Contact_Interest_Finder_Places_To_Go:
+    Unique values: 21
+
+  Little_Contact_Interest_Finder_Hobbies:
+    Unique values: 45
+
+  Little_Contact_Interest_Finder_Entertainment:
+    Unique values: 34
+
+  Little_Contact_Interest_Finder_Other_Interests:
+    Unique values: 20
+
+  Little_Other_Interests:
+    Unique values: 276
+
+  Little_Contact_Interest_Finder_Career:
+    Unique values: 41
+
+  Little_Contact_Interest_Finder_Personality:
+    Unique values: 42
+
+  Little_Contact_Interest_Finder_Three_Wishes:
+    Unique values: 41
+
+  Little_Gender:
+    Unique values: 4
+    Value counts:
+      Female: 1796 (54.84%)
+      Male: 1464 (44.70%)
+      Genderqueer/Nonbinary: 10 (0.31%)
+      Trans Male: 4 (0.12%)
+
+  Little_Participant_Race_Ethnicity:
+    Unique values: 27
+
+  Big_Age_Group:
+    Unique values: 5
+    Value counts:
+      26-35: 1651 (50.41%)
+      36-45: 723 (22.08%)
+      18-25: 348 (10.63%)
+      55+: 280 (8.55%)
+      46-55: 273 (8.34%)
+
+## DATE COLUMNS ##
+
+  Big_Approved_Date:
+    Earliest date: 2017-05-01 00:00:00
+    Latest date: 2024-12-17 00:00:00
+    Date range: 2787 days
+
+  Big_Birthdate:
+    Earliest date: 1944-04-01 00:00:00
+    Latest date: 2005-04-01 00:00:00
+    Date range: 22280 days
+
+  Match_Activation_Date:
+    Earliest date: 2017-01-03 00:00:00
+    Latest date: 2024-12-20 00:00:00
+    Date range: 2908 days
+
+  Match_Closure_Meeting_Date:
+    Earliest date: 2017-05-01 00:00:00
+    Latest date: 2025-02-06 00:00:00
+    Date range: 2838 days
+
+  Big_Assessment_Uploaded:
+    Earliest date: 2019-01-14 00:00:00
+    Latest date: 2024-11-14 00:00:00
+    Date range: 2131 days
+
+  Big_Acceptance_Date:
+    Earliest date: 2019-02-20 00:00:00
+    Latest date: 2025-01-09 00:00:00
+    Date range: 2150 days
+
+  Big_Contact_Created_Date:
+    Earliest date: 2018-06-20 00:00:00
+    Latest date: 2024-10-17 00:00:00
+    Date range: 2311 days
+
+  Big_Enrollment_Created_Date:
+    Earliest date: 2019-11-01 00:00:00
+    Latest date: 2024-10-30 00:00:00
+    Date range: 1825 days
+
+  Little_RTBM_Date_in_MF:
+    Earliest date: 2023-06-01 00:00:00
+    Latest date: 2024-11-19 00:00:00
+    Date range: 537 days
+
+  Little_Application_Received:
+    Earliest date: 2018-07-10 00:00:00
+    Latest date: 2024-11-07 00:00:00
+    Date range: 2312 days
+
+  Little_Interview_Date:
+    Earliest date: 2018-08-22 00:00:00
+    Latest date: 2024-11-12 00:00:00
+    Date range: 2274 days
+
+  Little_Acceptance_Date:
+    Earliest date: 2019-08-09 00:00:00
+    Latest date: 2024-11-12 00:00:00
+    Date range: 1922 days
+
+  Little_Birthdate:
+    Earliest date: 2000-09-01 00:00:00
+    Latest date: 2017-01-01 00:00:00
+    Date range: 5966 days
+
+## POTENTIAL DATA CLEANING ISSUES ##
+
+Duplicate rows: 0 (0.00%)
+
+High Correlation between Numeric Columns (>0.8):
+  Big_Age and Big_Age: 1.000
+  Big_Age and Age_Difference: 0.970
+  Big_Days_Acceptance_to_Match and Big_Days_Acceptance_to_Match: 1.000
+  Big_Days_Interview_to_Acceptance and Big_Days_Interview_to_Acceptance: 1.000
+  Big_Days_Interview_to_Match and Big_Days_Interview_to_Match: 1.000
+  Big_Re_Enroll and Big_Re_Enroll: 1.000
+  Little_RTBM_in_Matchforce and Little_RTBM_in_Matchforce: 1.000
+  Little_Mailing_Address_Census_Block_Group and Little_Mailing_Address_Census_Block_Group: 1.000
+  Big_Home_Census_Block_Group and Big_Home_Census_Block_Group: 1.000
+  Big_Employer_School_Census_Block_Group and Big_Employer_School_Census_Block_Group: 1.000
+  Match_Length and Match_Length: 1.000
+  Little_Birthdate_year and Little_Birthdate_year: 1.000
+  Age_Difference and Big_Age: 0.970
+  Age_Difference and Age_Difference: 1.000
+
+## RECOMMENDATIONS FOR DATA CLEANING ##
+1. Consider handling or removing columns with high missing values: Big_County, Big_Military, Big_Level_of_Education, Big_Languages, Big_Employer, Closure_Reason, Closure_Details, Match_Closure_Meeting_Date, Big_Enrollment_Record_Type, Big_Assessment_Uploaded, Big_Acceptance_Date, Big_Car_Access, Big_Days_Acceptance_to_Match, Big_Days_Interview_to_Acceptance, Big_Days_Interview_to_Match, Big_Open_to_Cross_Gender_Match, Big_Re_Enroll, Big_Contact_Preferred_Communication_Type, Big_Contact_Former_Big_Little, Big_Contact_Interest_Finder_Sports, Big_Contact_Interest_Finder_Places_To_Go, Big_Contact_Interest_Finder_Hobbies, Big_Contact_Interest_Finder_Entertainment, Big_Contact_Created_Date, Big_Enrollment_Created_Date, Big_Contact_Volunteer_Availability, Big_Contact_Marital_Status, Little_RTBM_Date_in_MF, Little_RTBM_in_Matchforce, Little_Moved_to_RTBM_in_MF, Little_Application_Received, Little_Contact_Language_s_Spoken, Little_Interview_Date, Little_Acceptance_Date, Little_Contact_Interest_Finder_Sports, Little_Contact_Interest_Finder_Outdoors, Little_Contact_Interest_Finder_Arts, Little_Contact_Interest_Finder_Places_To_Go, Little_Contact_Interest_Finder_Hobbies, Little_Contact_Interest_Finder_Entertainment, Little_Contact_Interest_Finder_Other_Interests, Little_Other_Interests, Little_Contact_Interest_Finder_Career, Little_Contact_Interest_Finder_Personality, Little_Contact_Interest_Finder_Three_Wishes, Little_Mailing_Address_Census_Block_Group, Big_Home_Census_Block_Group, Big_Employer_School_Census_Block_Group
+2. Check for outliers in 'Big_Age' (251 potential outliers, 7.66%)
+3. Check for outliers in 'Age_Difference' (250 potential outliers, 7.63%)
+
+================================================================================
+Analysis complete!
