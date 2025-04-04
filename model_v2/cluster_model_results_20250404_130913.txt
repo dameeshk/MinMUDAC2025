@@ -1,6 +1,6 @@
 Match Length Prediction with Cluster-Based Models
 =============================================
-Analysis timestamp: 2025-04-04 11:56:28
+Analysis timestamp: 2025-04-04 13:09:13
 
 Dataset Information:
 ------------------
@@ -15,7 +15,7 @@ Target variable: Match Length
 
 --------------------------------------------------------------------------------
 Clustering Data into 4 Match Profiles
-Timestamp: 2025-04-04 11:56:29
+Timestamp: 2025-04-04 13:09:14
 --------------------------------------------------------------------------------
 
 Cluster Analysis:
@@ -77,14 +77,14 @@ Cluster 3:
 
 --------------------------------------------------------------------------------
 Training Baseline Models
-Timestamp: 2025-04-04 11:56:29
+Timestamp: 2025-04-04 13:09:14
 --------------------------------------------------------------------------------
 
 
 RandomForest Baseline Results:
 ----------------
 Mean Squared Error: 281.20
-Root Mean Squared Error: 16.77 months
+Root Mean Squared Error: 16.77
 R2 Score: 0.28
 
 Top 20 most important features (baseline):
@@ -114,12 +114,12 @@ Top 20 most important features (baseline):
 XGBoost Baseline Results:
 ----------------
 Mean Squared Error: 272.07
-Root Mean Squared Error: 16.49 months
+Root Mean Squared Error: 16.49
 R2 Score: 0.31
 
 --------------------------------------------------------------------------------
 Training Cluster-Specific Models
-Timestamp: 2025-04-04 11:56:37
+Timestamp: 2025-04-04 13:09:22
 --------------------------------------------------------------------------------
 
 
@@ -129,7 +129,7 @@ Models for Cluster 0:
 RandomForest Results for Cluster 0:
 ----------------
 Mean Squared Error: 354.37
-Root Mean Squared Error: 18.82 months
+Root Mean Squared Error: 18.82
 R2 Score: 0.16
 Cluster Size: 1891
 
@@ -150,7 +150,7 @@ Top 10 most important features for Cluster 0:
 XGBoost Results for Cluster 0:
 ----------------
 Mean Squared Error: 343.86
-Root Mean Squared Error: 18.54 months
+Root Mean Squared Error: 18.54
 R2 Score: 0.18
 Cluster Size: 1891
 
@@ -160,7 +160,7 @@ Models for Cluster 1:
 RandomForest Results for Cluster 1:
 ----------------
 Mean Squared Error: 394.99
-Root Mean Squared Error: 19.87 months
+Root Mean Squared Error: 19.87
 R2 Score: 0.18
 Cluster Size: 515
 
@@ -181,7 +181,7 @@ Top 10 most important features for Cluster 1:
 XGBoost Results for Cluster 1:
 ----------------
 Mean Squared Error: 421.94
-Root Mean Squared Error: 20.54 months
+Root Mean Squared Error: 20.54
 R2 Score: 0.13
 Cluster Size: 515
 
@@ -191,7 +191,7 @@ Models for Cluster 2:
 RandomForest Results for Cluster 2:
 ----------------
 Mean Squared Error: 323.25
-Root Mean Squared Error: 17.98 months
+Root Mean Squared Error: 17.98
 R2 Score: 0.23
 Cluster Size: 201
 
@@ -212,7 +212,7 @@ Top 10 most important features for Cluster 2:
 XGBoost Results for Cluster 2:
 ----------------
 Mean Squared Error: 365.17
-Root Mean Squared Error: 19.11 months
+Root Mean Squared Error: 19.11
 R2 Score: 0.13
 Cluster Size: 201
 
@@ -222,7 +222,7 @@ Models for Cluster 3:
 RandomForest Results for Cluster 3:
 ----------------
 Mean Squared Error: 94.69
-Root Mean Squared Error: 9.73 months
+Root Mean Squared Error: 9.73
 R2 Score: 0.26
 Cluster Size: 668
 
@@ -243,7 +243,7 @@ Top 10 most important features for Cluster 3:
 XGBoost Results for Cluster 3:
 ----------------
 Mean Squared Error: 93.97
-Root Mean Squared Error: 9.69 months
+Root Mean Squared Error: 9.69
 R2 Score: 0.27
 Cluster Size: 668
 
@@ -251,27 +251,27 @@ Cluster Size: 668
 Overall Cluster Model Performance Summary:
 --------------------------------------------------------------------------------
 
- Cluster        Model  RMSE (months)       R2
-       0 RandomForest      18.824814 0.157365
-       0      XGBoost      18.543505 0.182361
-       1 RandomForest      19.874463 0.182089
-       1      XGBoost      20.541058 0.126304
-       2 RandomForest      17.979058 0.228547
-       2      XGBoost      19.109373 0.128498
-       3 RandomForest       9.730850 0.262481
-       3      XGBoost       9.693914 0.268069
+ Cluster        Model      RMSE       R2
+       0 RandomForest 18.824814 0.157365
+       0      XGBoost 18.543505 0.182361
+       1 RandomForest 19.874463 0.182089
+       1      XGBoost 20.541058 0.126304
+       2 RandomForest 17.979058 0.228547
+       2      XGBoost 19.109373 0.128498
+       3 RandomForest  9.730850 0.262481
+       3      XGBoost  9.693914 0.268069
 
 
 --------------------------------------------------------------------------------
 Evaluating Ensemble of Cluster Models
-Timestamp: 2025-04-04 11:56:56
+Timestamp: 2025-04-04 13:09:41
 --------------------------------------------------------------------------------
 
 
 RandomForest Ensemble Results:
 ----------------
 Mean Squared Error: 108.74
-Root Mean Squared Error: 10.43 months
+Root Mean Squared Error: 10.43
 R2 Score: 0.72
 Cluster-specific predictions: 655/655 (100.0%)
 Baseline predictions: 0/655 (0.0%)
@@ -279,7 +279,7 @@ Baseline predictions: 0/655 (0.0%)
 XGBoost Ensemble Results:
 ----------------
 Mean Squared Error: 133.20
-Root Mean Squared Error: 11.54 months
+Root Mean Squared Error: 11.54
 R2 Score: 0.66
 Cluster-specific predictions: 655/655 (100.0%)
 Baseline predictions: 0/655 (0.0%)
@@ -287,7 +287,13 @@ Baseline predictions: 0/655 (0.0%)
 Comparison: Ensemble vs. Baseline:
 -------------------------------
 
-       Model  Baseline RMSE (months)  Ensemble RMSE (months)  RMSE Improvement (months)  Baseline R2  Ensemble R2  R2 Improvement
-RandomForest               16.769071               10.427980                   6.341090     0.282956     0.722714        0.439758
-     XGBoost               16.494599               11.541191                   4.953408     0.306236     0.660352        0.354116
+       Model  Baseline RMSE  Ensemble RMSE  RMSE Improvement  Baseline R2  Ensemble R2  R2 Improvement
+RandomForest      16.769071      10.427980          6.341090     0.282956     0.722714        0.439758
+     XGBoost      16.494599      11.541191          4.953408     0.306236     0.660352        0.354116
+
+
+--------------------------------------------------------------------------------
+Evaluating Quantile Regression Forests
+Timestamp: 2025-04-04 13:10:09
+--------------------------------------------------------------------------------
 

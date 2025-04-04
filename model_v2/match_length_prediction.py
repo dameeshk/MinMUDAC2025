@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import geopandas as gpd
 from math import radians, sin, cos, sqrt, atan2
-from sklearn.metrics import silhouette_score
 warnings.filterwarnings('ignore')
 
 def select_features(X, y, importance_threshold=0.001):
@@ -657,174 +656,286 @@ Baseline predictions: {prediction_sources['baseline']}/{len(y_test)} ({predictio
     
     return ensemble_predictions
 
-def find_optimal_clusters(X, y, results_file, min_clusters=4, max_clusters=7):
+def evaluate_quantile_regression_forests(X, y, cluster_labels, small_clusters, results_file):
     """
-    Find the optimal number of clusters by evaluating model performance across different cluster counts
+    Implement a custom version of Quantile Regression Forests using standard RandomForestRegressor
+    by accessing individual tree predictions to calculate quantiles
     """
-    print(f"\nFinding optimal number of clusters ({min_clusters}-{max_clusters})...")
+    print("\nEvaluating Quantile Regression Forests (Custom Implementation)...")
     
-    # Write to results file
+    # Write to both console and file
     with open(results_file, 'a') as f:
         f.write(f"\n{'-'*80}\n")
-        f.write(f"Finding Optimal Number of Clusters ({min_clusters}-{max_clusters})\n")
+        f.write(f"Evaluating Quantile Regression Forests (Custom Implementation)\n")
         f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"{'-'*80}\n\n")
     
-    # Select core features for clustering
-    clustering_features = [
-        # Program characteristics
-        'Program Type_Community', 'Program Type_School', 'Program_Maturity_Years', 
+    # Define a function to predict quantiles from a RandomForestRegressor
+    def predict_quantiles(rf_model, X, quantiles=[0.1, 0.25, 0.5, 0.75, 0.9]):
+        """
+        Get quantile predictions from a random forest by using predictions from individual trees
+        """
+        # Get predictions from individual trees
+        tree_preds = np.array([tree.predict(X) for tree in rf_model.estimators_])
         
-        # Match demographics
-        'Age_Difference', 'Gender_Match', 'Race_Ethnicity_Match',
-        'Big_Age', 'Little_Age', 'Demographic_Similarity_Score',
+        # Calculate quantiles across tree predictions for each sample
+        quantile_preds = {}
+        for q in quantiles:
+            quantile_preds[q] = np.quantile(tree_preds, q, axis=0)
         
-        # Geographic factors
-        'Geographic_Distance', 'Same_County', 'Same_Census_Block',
-        
-        # Temporal factors
-        'Time_of_Year_Score', 'Activation_Day_of_Week'
-    ]
+        return quantile_preds
     
-    # Filter existing columns that are in the dataset
-    clustering_features = [col for col in clustering_features if col in X.columns]
+    # Get data for prediction
+    X_pred = X.drop(columns=['Cluster'])
     
-    # Standardize features for clustering
-    scaler = StandardScaler()
-    X_cluster = scaler.fit_transform(X[clustering_features])
+    # Split data consistently
+    X_train, X_test, y_train, y_test = train_test_split(X_pred, y, test_size=0.2, random_state=42)
     
-    # Track results for each cluster count
-    cluster_results = []
+    # Get cluster assignments for test samples
+    test_indices = X_test.index
     
-    # Test different numbers of clusters
-    for n_clusters in range(min_clusters, max_clusters + 1):
-        print(f"\nTesting with {n_clusters} clusters...")
-        
-        # Apply KMeans clustering
-        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-        cluster_labels = kmeans.fit_predict(X_cluster)
-        
-        # Calculate silhouette score for clustering quality
-        silhouette = silhouette_score(X_cluster, cluster_labels)
-        
-        # Add cluster labels to dataset
-        X_with_clusters = X.copy()
-        X_with_clusters['Cluster'] = cluster_labels
-        
-        # Get cluster statistics
-        cluster_stats = {}
-        for cluster_id in range(n_clusters):
-            cluster_mask = cluster_labels == cluster_id
-            cluster_size = np.sum(cluster_mask)
-            cluster_proportion = cluster_size / len(X)
-            avg_match_length = y[cluster_mask].mean()
-            
-            cluster_stats[cluster_id] = {
-                'size': cluster_size,
-                'proportion': cluster_proportion,
-                'avg_match_length': avg_match_length
-            }
-        
-        # Train ensemble model with these clusters
-        with open(results_file, 'a') as f:
-            f.write(f"\nEvaluating {n_clusters} clusters:\n")
-            f.write(f"Silhouette Score: {silhouette:.4f}\n\n")
-            
-            # Write cluster statistics
-            f.write("Cluster Statistics:\n")
-            for cluster_id, stats in cluster_stats.items():
-                f.write(f"Cluster {cluster_id}: {stats['size']} samples ({stats['proportion']:.1%}), ")
-                f.write(f"Avg Match Length: {stats['avg_match_length']:.2f} months\n")
-            f.write("\n")
-        
-        # Train cluster-specific models
-        cluster_models, cluster_performances, small_clusters = train_cluster_models(
-            X_with_clusters, y, cluster_labels, n_clusters, results_file
-        )
-        
-        # Train baseline models
-        baseline_models, baseline_performances = train_and_evaluate_baseline(
-            X.copy(), y, results_file
-        )
-        
-        # Evaluate ensemble predictions
-        ensemble_predictions = evaluate_ensemble_predictions(
-            X_with_clusters, y, cluster_labels, cluster_models, 
-            baseline_models, small_clusters, results_file
-        )
-        
-        # Store results
-        cluster_results.append({
-            'n_clusters': n_clusters,
-            'silhouette': silhouette,
-            'rf_rmse': ensemble_predictions['RandomForest']['rmse'],
-            'rf_r2': ensemble_predictions['RandomForest']['r2'],
-            'xgb_rmse': ensemble_predictions['XGBoost']['rmse'],
-            'xgb_r2': ensemble_predictions['XGBoost']['r2'],
-            'small_clusters': len(small_clusters),
-            'cluster_stats': cluster_stats
-        })
+    # Handle cluster_labels properly based on its type
+    if isinstance(cluster_labels, np.ndarray):
+        indices_map = {idx: i for i, idx in enumerate(X.index)}
+        test_clusters = np.array([cluster_labels[indices_map[idx]] for idx in test_indices])
+    else:
+        test_clusters = cluster_labels.loc[test_indices].values
     
-    # Find best cluster count by RandomForest RMSE
-    best_cluster = min(cluster_results, key=lambda x: x['rf_rmse'])
+    # Define quantiles to predict
+    quantiles = [0.1, 0.25, 0.5, 0.75, 0.9]
     
-    # Write summary of results
+    # Train a global RF model as baseline
+    print("\nTraining global random forest...")
+    global_rf = RandomForestRegressor(
+        n_estimators=300,
+        min_samples_split=2,
+        min_samples_leaf=1,
+        random_state=42,
+        n_jobs=-1
+    )
+    global_rf.fit(X_train, y_train)
+    
+    # Predict mean for comparison
+    global_mean_pred = global_rf.predict(X_test)
+    
+    # Calculate metrics for mean prediction
+    global_mse = mean_squared_error(y_test, global_mean_pred)
+    global_rmse = np.sqrt(global_mse)
+    global_r2 = r2_score(y_test, global_mean_pred)
+    
+    # Get quantile predictions
+    global_predictions = predict_quantiles(global_rf, X_test, quantiles)
+    
+    # Calculate interval coverage (percentage of true values within the prediction interval)
+    global_coverage = np.mean((y_test >= global_predictions[0.1]) & (y_test <= global_predictions[0.9]))
+    global_coverage_75 = np.mean((y_test >= global_predictions[0.25]) & (y_test <= global_predictions[0.75]))
+    
+    # Calculate interval width
+    global_interval_width = np.mean(global_predictions[0.9] - global_predictions[0.1])
+    global_interval_width_75 = np.mean(global_predictions[0.75] - global_predictions[0.25])
+    
+    # Write global model results
+    global_results = f"""
+Global Quantile Regression Forest Results:
+-----------------------------------------
+Mean Squared Error: {global_mse:.2f}
+Root Mean Squared Error: {global_rmse:.2f}
+R2 Score: {global_r2:.2f}
+80% Prediction Interval Coverage: {global_coverage:.3f} (ideal: 0.800)
+50% Prediction Interval Coverage: {global_coverage_75:.3f} (ideal: 0.500)
+80% Prediction Interval Width: {global_interval_width:.2f} months
+50% Prediction Interval Width: {global_interval_width_75:.2f} months
+"""
+    
+    print(global_results)
     with open(results_file, 'a') as f:
-        f.write(f"\n{'-'*80}\n")
-        f.write("Cluster Optimization Summary:\n")
-        f.write(f"{'-'*80}\n\n")
+        f.write(global_results)
+    
+    # Train cluster-specific models
+    print("\nTraining cluster-specific random forests...")
+    cluster_rf_models = {}
+    
+    # Get all unique cluster IDs
+    unique_clusters = sorted(list(set(cluster_labels)))
+    
+    # Train a RF for each cluster
+    for cluster_id in unique_clusters:
+        # Get data for this cluster
+        cluster_mask = X['Cluster'] == cluster_id
+        X_cluster = X.loc[cluster_mask].drop(columns=['Cluster'])
+        y_cluster = y.loc[cluster_mask]
         
-        f.write("Results by cluster count:\n")
-        f.write("-----------------------\n\n")
+        # Skip if cluster is too small
+        if len(X_cluster) < 50:
+            print(f"Cluster {cluster_id} has only {len(X_cluster)} samples, skipping...")
+            continue
         
-        # Create summary table
-        summary_data = []
-        for result in cluster_results:
-            summary_data.append({
-                'n_clusters': result['n_clusters'],
-                'silhouette': f"{result['silhouette']:.4f}",
-                'RF_RMSE': f"{result['rf_rmse']:.2f}",
-                'RF_R2': f"{result['rf_r2']:.2f}",
-                'XGB_RMSE': f"{result['xgb_rmse']:.2f}",
-                'XGB_R2': f"{result['xgb_r2']:.2f}",
-                'small_clusters': result['small_clusters']
-            })
+        print(f"Training random forest for Cluster {cluster_id}...")
         
-        summary_df = pd.DataFrame(summary_data)
-        f.write(summary_df.to_string(index=False))
+        # Create and train a RF for this cluster
+        cluster_rf = RandomForestRegressor(
+            n_estimators=300,
+            min_samples_split=2,
+            min_samples_leaf=1,
+            random_state=42,
+            n_jobs=-1
+        )
+        cluster_rf.fit(X_cluster, y_cluster)
+        
+        # Store the model
+        cluster_rf_models[cluster_id] = cluster_rf
+    
+    # Make predictions for test set using cluster-specific models
+    cluster_predictions = {}
+    for q in quantiles:
+        cluster_predictions[q] = np.zeros(len(y_test))
+    
+    # Also store mean predictions
+    cluster_mean_pred = np.zeros(len(y_test))
+    
+    for i, cluster_id in enumerate(test_clusters):
+        # Skip if cluster has no model
+        if cluster_id not in cluster_rf_models:
+            # Use global model predictions
+            cluster_mean_pred[i] = global_mean_pred[i]
+            for q in quantiles:
+                cluster_predictions[q][i] = global_predictions[q][i]
+            continue
+        
+        # Get the RF model for this cluster
+        cluster_rf = cluster_rf_models[cluster_id]
+        
+        # Extract features for this sample
+        X_sample = X_test.iloc[[i]]
+        
+        # Get mean prediction
+        cluster_mean_pred[i] = cluster_rf.predict(X_sample)[0]
+        
+        # Get quantile predictions
+        sample_quantiles = predict_quantiles(cluster_rf, X_sample, quantiles)
+        for q in quantiles:
+            cluster_predictions[q][i] = sample_quantiles[q][0]
+    
+    # Calculate metrics for cluster-specific predictions
+    cluster_mse = mean_squared_error(y_test, cluster_mean_pred)
+    cluster_rmse = np.sqrt(cluster_mse)
+    cluster_r2 = r2_score(y_test, cluster_mean_pred)
+    
+    # Calculate interval coverage
+    cluster_coverage = np.mean((y_test >= cluster_predictions[0.1]) & (y_test <= cluster_predictions[0.9]))
+    cluster_coverage_75 = np.mean((y_test >= cluster_predictions[0.25]) & (y_test <= cluster_predictions[0.75]))
+    
+    # Calculate interval width
+    cluster_interval_width = np.mean(cluster_predictions[0.9] - cluster_predictions[0.1])
+    cluster_interval_width_75 = np.mean(cluster_predictions[0.75] - cluster_predictions[0.25])
+    
+    # Write cluster-specific model results
+    cluster_results = f"""
+Cluster-Specific Quantile Regression Forest Results:
+--------------------------------------------------
+Mean Squared Error: {cluster_mse:.2f}
+Root Mean Squared Error: {cluster_rmse:.2f}
+R2 Score: {cluster_r2:.2f}
+80% Prediction Interval Coverage: {cluster_coverage:.3f} (ideal: 0.800)
+50% Prediction Interval Coverage: {cluster_coverage_75:.3f} (ideal: 0.500)
+80% Prediction Interval Width: {cluster_interval_width:.2f} months
+50% Prediction Interval Width: {cluster_interval_width_75:.2f} months
+"""
+    
+    print(cluster_results)
+    with open(results_file, 'a') as f:
+        f.write(cluster_results)
+    
+    # Compare with ensemble approach
+    with open(results_file, 'a') as f:
+        f.write("\nComparison with Ensemble and Baseline Approaches:\n")
+        f.write("-------------------------------\n\n")
+        
+        # Get ensemble model results from global variables
+        ensemble_rmse = ensemble_predictions['RandomForest']['rmse']
+        ensemble_r2 = ensemble_predictions['RandomForest']['r2']
+        
+        comparison_data = [{
+            'Model': 'Baseline RF',
+            'RMSE': baseline_performances['RandomForest']['rmse'],
+            'R2': baseline_performances['RandomForest']['r2'],
+            'Provides Intervals': 'No'
+        }, {
+            'Model': 'Ensemble RF',
+            'RMSE': ensemble_rmse,
+            'R2': ensemble_r2,
+            'Provides Intervals': 'No'
+        }, {
+            'Model': 'Global QRF',
+            'RMSE': global_rmse,
+            'R2': global_r2,
+            'Provides Intervals': 'Yes'
+        }, {
+            'Model': 'Cluster QRF',
+            'RMSE': cluster_rmse,
+            'R2': cluster_r2,
+            'Provides Intervals': 'Yes'
+        }]
+        
+        comparison_df = pd.DataFrame(comparison_data)
+        f.write(comparison_df.to_string(index=False))
         f.write("\n\n")
-        
-        f.write(f"Best cluster count: {best_cluster['n_clusters']} (RF RMSE: {best_cluster['rf_rmse']:.2f})\n\n")
     
-    # Plot results
-    plt.figure(figsize=(12, 8))
+    # Examine prediction errors by actual match length
+    error_by_length = pd.DataFrame({
+        'actual': y_test,
+        'predicted': cluster_mean_pred,
+        'error': np.abs(y_test - cluster_mean_pred),
+        'lower_bound': cluster_predictions[0.1],
+        'upper_bound': cluster_predictions[0.9],
+        'interval_width': cluster_predictions[0.9] - cluster_predictions[0.1],
+        'in_interval': (y_test >= cluster_predictions[0.1]) & (y_test <= cluster_predictions[0.9])
+    })
     
-    cluster_counts = [r['n_clusters'] for r in cluster_results]
-    rf_rmse = [r['rf_rmse'] for r in cluster_results]
-    xgb_rmse = [r['xgb_rmse'] for r in cluster_results]
-    silhouette = [r['silhouette'] for r in cluster_results]
+    # Group by match length bins
+    bins = [0, 6, 12, 24, 36, 100]
+    labels = ['0-6 months', '6-12 months', '12-24 months', '24-36 months', '36+ months']
+    error_by_length['length_bin'] = pd.cut(error_by_length['actual'], bins=bins, labels=labels)
     
-    plt.subplot(2, 1, 1)
-    plt.plot(cluster_counts, rf_rmse, 'o-', label='RandomForest RMSE')
-    plt.plot(cluster_counts, xgb_rmse, 's-', label='XGBoost RMSE')
-    plt.ylabel('RMSE')
-    plt.title('Model Performance by Cluster Count')
-    plt.legend()
-    plt.grid(True)
+    # Calculate metrics by length bin
+    bin_metrics = error_by_length.groupby('length_bin').agg({
+        'error': 'mean',
+        'in_interval': 'mean',
+        'interval_width': 'mean',
+        'actual': 'count'
+    }).rename(columns={
+        'error': 'Mean Absolute Error',
+        'in_interval': 'Interval Coverage',
+        'interval_width': 'Interval Width',
+        'actual': 'Count'
+    })
     
-    plt.subplot(2, 1, 2)
-    plt.plot(cluster_counts, silhouette, 'o-', color='green', label='Silhouette Score')
-    plt.xlabel('Number of Clusters')
-    plt.ylabel('Silhouette Score')
-    plt.title('Clustering Quality by Cluster Count')
-    plt.legend()
-    plt.grid(True)
+    # Write bin metrics
+    with open(results_file, 'a') as f:
+        f.write("\nPerformance by Match Length Category:\n")
+        f.write("---------------------------------\n\n")
+        f.write(bin_metrics.to_string())
+        f.write("\n\n")
     
-    plt.tight_layout()
-    plt.savefig('cluster_optimization.png')
+    print("Performance by match length category:")
+    print(bin_metrics)
     
-    print(f"Cluster optimization complete. Results saved to file and visualization saved as 'cluster_optimization.png'")
-    return best_cluster['n_clusters']
+    # Return the results
+    return {
+        'global': {
+            'rmse': global_rmse,
+            'r2': global_r2,
+            'coverage': global_coverage,
+            'interval_width': global_interval_width
+        },
+        'cluster': {
+            'rmse': cluster_rmse,
+            'r2': cluster_r2,
+            'coverage': cluster_coverage,
+            'interval_width': cluster_interval_width
+        },
+        'bin_metrics': bin_metrics
+    }
 
 # Create results file with timestamp
 results_file = f'cluster_model_results_{datetime.now().strftime("%Y%m%d_%H%M%S")}.txt'
@@ -856,22 +967,20 @@ with open(results_file, 'a') as f:
     f.write(f"Processed feature count: {X.shape[1]}\n")
     f.write(f"Target variable: Match Length\n\n")
 
-# Find optimal number of clusters
-optimal_clusters = find_optimal_clusters(X, y, results_file, min_clusters=4, max_clusters=7)
-
-# Run full model with optimal cluster count
-print(f"\nRunning full model with optimal cluster count: {optimal_clusters}")
-
-# Cluster the data with optimal cluster count
-X, cluster_labels = cluster_data(X, results_file, n_clusters=optimal_clusters)
+# Cluster the data
+n_clusters = 4  # Optimal number determined by analysis
+X, cluster_labels = cluster_data(X, results_file, n_clusters=n_clusters)
 
 # Train baseline models for comparison
 baseline_models, baseline_performances = train_and_evaluate_baseline(X.drop(columns=['Cluster']), y, results_file)
 
 # Train cluster-specific models
-cluster_models, cluster_performances, small_clusters = train_cluster_models(X, y, cluster_labels, optimal_clusters, results_file)
+cluster_models, cluster_performances, small_clusters = train_cluster_models(X, y, cluster_labels, n_clusters, results_file)
 
-# Evaluate ensemble predictions
+# Evaluate standard ensemble predictions
 ensemble_predictions = evaluate_ensemble_predictions(X, y, cluster_labels, cluster_models, baseline_models, small_clusters, results_file)
+
+# Evaluate with quantile regression forests
+qrf_results = evaluate_quantile_regression_forests(X, y, cluster_labels, small_clusters, results_file)
 
 print(f"\nCluster-based modeling complete! Results saved to: {results_file}") 
