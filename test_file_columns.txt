@@ -1,0 +1,65 @@
+Test File Columns
+==================================================
+1. Match ID 18Char
+2. Completion Date
+3. Match Support Contact Notes
+4. Little ID
+5. Big ID
+6. Big County
+7. Big Age
+8. Big Occupation
+9. Big: Military
+10. Big Approved Date
+11. Big Level of Education
+12. Big Languages
+13. Big Gender
+14. Big Birthdate
+15. Big Employer
+16. Program
+17. Program Type
+18. Big Race/Ethnicity
+19. Match Activation Date
+20. Rationale for Match
+21. Big Enrollment: Record Type
+22. Big Assessment Uploaded
+23. Big Acceptance Date
+24. Big Car Access
+25. Big Days Acceptance to Match
+26. Big Days Interview to Acceptance
+27. Big Days Interview to Match
+28. Big Open to Cross-Gender Match
+29. Big Re-Enroll
+30. Big Contact: Preferred Communication Type
+31. Big Contact: Former Big/Little
+32. Big Contact: Interest Finder - Sports
+33. Big Contact: Interest Finder - Places To Go
+34. Big Contact: Interest Finder - Hobbies
+35. Big Contact: Interest Finder - Entertainment
+36. Big Contact: Created Date
+37. Big Enrollment: Created Date
+38. Big Contact: Volunteer Availability
+39. Big Contact: Marital Status
+40. Little RTBM Date in MF
+41. Little RTBM in Matchforce
+42. Little Moved to RTBM in MF
+43. Little Application Received
+44. Little Contact: Language(s) Spoken
+45. Little Interview Date
+46. Little Acceptance Date
+47. Little Contact: Interest Finder - Sports
+48. Little Contact: Interest Finder - Outdoors
+49. Little Contact: Interest Finder - Arts
+50. Little Contact: Interest Finder - Places To Go
+51. Little Contact: Interest Finder - Hobbies
+52. Little Contact: Interest Finder - Entertainment
+53. Little Contact: Interest Finder - Other Interests
+54. Little Other Interests
+55. Little Contact: Interest Finder - Career
+56. Little Contact: Interest Finder - Personality
+57. Little Contact: Interest Finder - Three Wishes
+58. Little Gender
+59. Little Participant: Race/Ethnicity
+60. Little Birthdate
+61. Little Mailing Address Census Block Group
+62. Big Home Census Block Group
+63. Big Employer/School Census Block Group

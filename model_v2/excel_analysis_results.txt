@@ -1,5 +1,5 @@
 Analyzing Excel file: C:\Users\solo\Desktop\Repos\MinMUDAC2025\model_v2\enhanced_data.xlsx
-Analysis timestamp: 2025-04-03 14:54:24
+Analysis timestamp: 2025-04-04 13:33:15
 
 ================================================================================
 
@@ -7,7 +7,7 @@ Reading Excel file...
 
 ## BASIC INFORMATION ##
 Number of rows: 3275
-Number of columns: 85
+Number of columns: 98
 
 ## COLUMN INFORMATION ##
 
@@ -83,20 +83,33 @@ Column Names:
   69. Big_Age_Group
   70. Little_Age_Group
   71. Age_Compatibility_Score
-  72. Big_Occupation_Category
-  73. Big_Education_Level
-  74. Gender_Compatibility_Score
-  75. Race_Ethnicity_Compatibility_Score
-  76. Language_Compatibility_Score
-  77. Demographic_Compatibility_Score
-  78. Days_Approval_to_Acceptance
-  79. Days_Acceptance_to_Match
-  80. Has_Approval_Date
-  81. Has_Acceptance_Date
-  82. Has_Match_Date
-  83. Volunteer_Readiness_Score
-  84. Days_Created_to_Approval
-  85. Days_Enrollment_to_Approval
+  72. Little County
+  73. Big_Occupation_Category
+  74. Big_Education_Level
+  75. Gender_Compatibility_Score
+  76. Race_Ethnicity_Compatibility_Score
+  77. Language_Compatibility_Score
+  78. Demographic_Compatibility_Score
+  79. Days_Approval_to_Acceptance
+  80. Days_Acceptance_to_Match
+  81. Has_Approval_Date
+  82. Has_Acceptance_Date
+  83. Has_Match_Date
+  84. Volunteer_Readiness_Score
+  85. Days_Created_to_Approval
+  86. Days_Enrollment_to_Approval
+  87. Geographic_Distance
+  88. Urban_Rural_Score
+  89. Age_Difference
+  90. Age_Group_Interaction
+  91. Activation_Season
+  92. Activation_Day_of_Week
+  93. Time_of_Year_Score
+  94. Program_Maturity_Years
+  95. Program_Season_Interaction
+  96. Program_Maturity_Type_Interaction
+  97. Geographic_Type_Interaction
+  98. Age_Type_Interaction
 
 Data Types:
   Match ID 18Char: object
@@ -169,7 +182,8 @@ Data Types:
   Little_Age: float64
   Big_Age_Group: object
   Little_Age_Group: object
-  Age_Compatibility_Score: int64
+  Age_Compatibility_Score: float64
+  Little County: object
   Big_Occupation_Category: object
   Big_Education_Level: float64
   Gender_Compatibility_Score: int64
@@ -184,6 +198,18 @@ Data Types:
   Volunteer_Readiness_Score: float64
   Days_Created_to_Approval: float64
   Days_Enrollment_to_Approval: float64
+  Geographic_Distance: float64
+  Urban_Rural_Score: float64
+  Age_Difference: float64
+  Age_Group_Interaction: object
+  Activation_Season: object
+  Activation_Day_of_Week: int64
+  Time_of_Year_Score: float64
+  Program_Maturity_Years: float64
+  Program_Season_Interaction: object
+  Program_Maturity_Type_Interaction: float64
+  Geographic_Type_Interaction: float64
+  Age_Type_Interaction: float64
 
 ## MISSING VALUES ##
 
@@ -259,6 +285,7 @@ Missing Values by Column:
   Big_Age_Group: 0 missing values (0.00%)
   Little_Age_Group: 723 missing values (22.08%)
   Age_Compatibility_Score: 0 missing values (0.00%)
+  Little County: 968 missing values (29.56%)
   Big_Occupation_Category: 0 missing values (0.00%)
   Big_Education_Level: 3206 missing values (97.89%)
   Gender_Compatibility_Score: 0 missing values (0.00%)
@@ -273,8 +300,20 @@ Missing Values by Column:
   Volunteer_Readiness_Score: 0 missing values (0.00%)
   Days_Created_to_Approval: 1906 missing values (58.20%)
   Days_Enrollment_to_Approval: 1906 missing values (58.20%)
+  Geographic_Distance: 1109 missing values (33.86%)
+  Urban_Rural_Score: 0 missing values (0.00%)
+  Age_Difference: 0 missing values (0.00%)
+  Age_Group_Interaction: 0 missing values (0.00%)
+  Activation_Season: 0 missing values (0.00%)
+  Activation_Day_of_Week: 0 missing values (0.00%)
+  Time_of_Year_Score: 0 missing values (0.00%)
+  Program_Maturity_Years: 0 missing values (0.00%)
+  Program_Season_Interaction: 0 missing values (0.00%)
+  Program_Maturity_Type_Interaction: 0 missing values (0.00%)
+  Geographic_Type_Interaction: 1109 missing values (33.86%)
+  Age_Type_Interaction: 0 missing values (0.00%)
 
-Total missing values: 129388 out of 278375 cells (46.48%)
+Total missing values: 132574 out of 320950 cells (41.31%)
 
 ## STATISTICAL SUMMARY ##
 
@@ -358,25 +397,25 @@ Numeric Columns Summary:
     Standard Deviation: 19.704251021934148
 
   Big_Age:
-    Min: 20.00688983906007
-    Max: 81.00620537636328
-    Mean: 35.985651640816684
-    Median: 33.09107875076438
-    Standard Deviation: 10.860244124954745
+    Min: 20.00783444338822
+    Max: 81.00714998069142
+    Mean: 35.98659624514483
+    Median: 33.09202335509253
+    Standard Deviation: 10.860244124954743
 
   Little_Age:
-    Min: 8.253296409901957
-    Max: 24.58731420593207
-    Mean: 15.866155112766773
-    Median: 16.09176321346116
-    Standard Deviation: 2.6390346669861438
+    Min: 8.254241014230107
+    Max: 24.58825881026022
+    Mean: 15.867099717094924
+    Median: 16.09270781778931
+    Standard Deviation: 2.639034666986144
 
   Age_Compatibility_Score:
-    Min: 0
-    Max: 3
-    Mean: 1.418320610687023
-    Median: 2.0
-    Standard Deviation: 1.2455051455578623
+    Min: -0.2646132785763171
+    Max: 1.0
+    Mean: 0.7948936574865066
+    Median: 0.8353867214236825
+    Standard Deviation: 0.17813987857364993
 
   Big_Education_Level:
     Min: 2.0
@@ -468,6 +507,69 @@ Numeric Columns Summary:
     Mean: 127.27246165084003
     Median: 102.0
     Standard Deviation: 291.1497014657573
+
+  Geographic_Distance:
+    Min: 0.0
+    Max: 281060702852.0
+    Mean: 2282885729.4976916
+    Median: 783930.5
+    Standard Deviation: 22355091641.779224
+
+  Urban_Rural_Score:
+    Min: 0.0
+    Max: 1.0
+    Mean: 0.6919083969465649
+    Median: 1.0
+    Standard Deviation: 0.4611132224800796
+
+  Age_Difference:
+    Min: 4.418891170431213
+    Max: 70.58453114305269
+    Mean: 20.119496528049908
+    Median: 17.08418891170431
+    Standard Deviation: 10.866929650276065
+
+  Activation_Day_of_Week:
+    Min: 0
+    Max: 6
+    Mean: 2.0989312977099237
+    Median: 2.0
+    Standard Deviation: 1.469081289420108
+
+  Time_of_Year_Score:
+    Min: 0.005479452054794521
+    Max: 1.002739726027397
+    Mean: 0.5182992784690997
+    Median: 0.5287671232876713
+    Standard Deviation: 0.30366727095046997
+
+  Program_Maturity_Years:
+    Min: 0.0
+    Max: 7.967123287671233
+    Mean: 3.2196992575551606
+    Median: 2.747945205479452
+    Standard Deviation: 2.3420671735764262
+
+  Program_Maturity_Type_Interaction:
+    Min: 0.0
+    Max: 7.967123287671233
+    Mean: 2.5375919690473703
+    Median: 1.802739726027397
+    Standard Deviation: 2.5391238694280207
+
+  Geographic_Type_Interaction:
+    Min: 0.0
+    Max: 281060702852.0
+    Mean: 2282885729.4976916
+    Median: 783930.5
+    Standard Deviation: 22355091641.779224
+
+  Age_Type_Interaction:
+    Min: 0.0
+    Max: 70.58453114305269
+    Mean: 15.788500817697802
+    Median: 15.33744010951403
+    Standard Deviation: 13.037502851376741
 
 ## CATEGORICAL COLUMNS ##
 
@@ -707,6 +809,23 @@ Numeric Columns Summary:
       11-15: 1113 (33.98%)
       5-10: 48 (1.47%)
 
+  Little County:
+    Unique values: 13
+    Value counts:
+      Hennepin: 1302 (39.76%)
+      Ramsey: 509 (15.54%)
+      Anoka: 189 (5.77%)
+      Dakota: 173 (5.28%)
+      Washington: 105 (3.21%)
+      Scott: 13 (0.40%)
+      Carver: 7 (0.21%)
+      McLeod: 2 (0.06%)
+      Rice: 2 (0.06%)
+      Wright: 2 (0.06%)
+      St. Louis: 1 (0.03%)
+      Kanabec: 1 (0.03%)
+      Blue Earth: 1 (0.03%)
+
   Big_Occupation_Category:
     Unique values: 5
     Value counts:
@@ -715,6 +834,35 @@ Numeric Columns Summary:
       Service: 203 (6.20%)
       Technical: 4 (0.12%)
       Skilled: 1 (0.03%)
+
+  Age_Group_Interaction:
+    Unique values: 20
+
+  Activation_Season:
+    Unique values: 4
+    Value counts:
+      Fall: 966 (29.50%)
+      Winter: 877 (26.78%)
+      Spring: 778 (23.76%)
+      Summer: 654 (19.97%)
+
+  Program_Season_Interaction:
+    Unique values: 14
+    Value counts:
+      Community_Summer: 652 (19.91%)
+      Community_Spring: 644 (19.66%)
+      Community_Fall: 604 (18.44%)
+      Community_Winter: 520 (15.88%)
+      Site_Winter: 245 (7.48%)
+      Site_Fall: 228 (6.96%)
+      Site Based Facilitated_Fall: 133 (4.06%)
+      Site Based Facilitated_Winter: 111 (3.39%)
+      Site_Spring: 95 (2.90%)
+      Site Based Facilitated_Spring: 38 (1.16%)
+      Site_Summer: 2 (0.06%)
+      Site Based Plus_Fall: 1 (0.03%)
+      Site Based Plus_Winter: 1 (0.03%)
+      Site Based Plus_Spring: 1 (0.03%)
 
 ## DATE COLUMNS ##
 
@@ -790,6 +938,7 @@ Duplicate rows: 0 (0.00%)
 High Correlation between Numeric Columns (>0.8):
   Big Age and Big Age: 1.000
   Big Age and Big_Age: 1.000
+  Big Age and Age_Difference: 0.970
   Big Days Acceptance to Match and Big Days Acceptance to Match: 1.000
   Big Days Acceptance to Match and Big_Education_Level: 0.843
   Big Days Interview to Acceptance and Big Days Interview to Acceptance: 1.000
@@ -804,6 +953,7 @@ High Correlation between Numeric Columns (>0.8):
   Match Length and Match Length: 1.000
   Big_Age and Big Age: 1.000
   Big_Age and Big_Age: 1.000
+  Big_Age and Age_Difference: 0.970
   Little_Age and Little_Age: 1.000
   Age_Compatibility_Score and Age_Compatibility_Score: 1.000
   Big_Education_Level and Big Days Acceptance to Match: 0.843
@@ -824,22 +974,41 @@ High Correlation between Numeric Columns (>0.8):
   Has_Approval_Date and Has_Approval_Date: 1.000
   Has_Acceptance_Date and Has_Acceptance_Date: 1.000
   Has_Acceptance_Date and Volunteer_Readiness_Score: 0.900
+  Has_Acceptance_Date and Program_Maturity_Years: 0.822
   Volunteer_Readiness_Score and Has_Acceptance_Date: 0.900
   Volunteer_Readiness_Score and Volunteer_Readiness_Score: 1.000
+  Volunteer_Readiness_Score and Program_Maturity_Years: 0.826
   Days_Created_to_Approval and Days_Created_to_Approval: 1.000
   Days_Enrollment_to_Approval and Days_Approval_to_Acceptance: 0.920
   Days_Enrollment_to_Approval and Days_Acceptance_to_Match: 0.918
   Days_Enrollment_to_Approval and Days_Enrollment_to_Approval: 1.000
+  Geographic_Distance and Geographic_Distance: 1.000
+  Geographic_Distance and Geographic_Type_Interaction: 1.000
+  Urban_Rural_Score and Urban_Rural_Score: 1.000
+  Age_Difference and Big Age: 0.970
+  Age_Difference and Big_Age: 0.970
+  Age_Difference and Age_Difference: 1.000
+  Activation_Day_of_Week and Activation_Day_of_Week: 1.000
+  Time_of_Year_Score and Time_of_Year_Score: 1.000
+  Program_Maturity_Years and Has_Acceptance_Date: 0.822
+  Program_Maturity_Years and Volunteer_Readiness_Score: 0.826
+  Program_Maturity_Years and Program_Maturity_Years: 1.000
+  Program_Maturity_Type_Interaction and Program_Maturity_Type_Interaction: 1.000
+  Geographic_Type_Interaction and Geographic_Distance: 1.000
+  Geographic_Type_Interaction and Geographic_Type_Interaction: 1.000
+  Age_Type_Interaction and Age_Type_Interaction: 1.000
 
 ## RECOMMENDATIONS FOR DATA CLEANING ##
-1. Consider handling or removing columns with high missing values: Big County, Big: Military, Big Level of Education, Big Languages, Big Employer, Closure Reason, Closure Details, Match Closure Meeting Date, Big Enrollment: Record Type, Big Assessment Uploaded, Big Acceptance Date, Big Car Access, Big Days Acceptance to Match, Big Days Interview to Acceptance, Big Days Interview to Match, Big Open to Cross-Gender Match, Big Re-Enroll, Big Contact: Preferred Communication Type, Big Contact: Former Big/Little, Big Contact: Interest Finder - Sports, Big Contact: Interest Finder - Places To Go, Big Contact: Interest Finder - Hobbies, Big Contact: Interest Finder - Entertainment, Big Contact: Created Date, Big Enrollment: Created Date, Big Contact: Volunteer Availability, Big Contact: Marital Status, Little RTBM Date in MF, Little RTBM in Matchforce, Little Moved to RTBM in MF, Little Application Received, Little Contact: Language(s) Spoken, Little Interview Date, Little Acceptance Date, Little Contact: Interest Finder - Sports, Little Contact: Interest Finder - Outdoors, Little Contact: Interest Finder - Arts, Little Contact: Interest Finder - Places To Go, Little Contact: Interest Finder - Hobbies, Little Contact: Interest Finder - Entertainment, Little Contact: Interest Finder - Other Interests, Little Other Interests, Little Contact: Interest Finder - Career, Little Contact: Interest Finder - Personality, Little Contact: Interest Finder - Three Wishes, Little Mailing Address Census Block Group, Big Home Census Block Group, Big Employer/School Census Block Group, Little_Age_Group, Big_Education_Level, Days_Approval_to_Acceptance, Days_Acceptance_to_Match, Days_Created_to_Approval, Days_Enrollment_to_Approval
+1. Consider handling or removing columns with high missing values: Big County, Big: Military, Big Level of Education, Big Languages, Big Employer, Closure Reason, Closure Details, Match Closure Meeting Date, Big Enrollment: Record Type, Big Assessment Uploaded, Big Acceptance Date, Big Car Access, Big Days Acceptance to Match, Big Days Interview to Acceptance, Big Days Interview to Match, Big Open to Cross-Gender Match, Big Re-Enroll, Big Contact: Preferred Communication Type, Big Contact: Former Big/Little, Big Contact: Interest Finder - Sports, Big Contact: Interest Finder - Places To Go, Big Contact: Interest Finder - Hobbies, Big Contact: Interest Finder - Entertainment, Big Contact: Created Date, Big Enrollment: Created Date, Big Contact: Volunteer Availability, Big Contact: Marital Status, Little RTBM Date in MF, Little RTBM in Matchforce, Little Moved to RTBM in MF, Little Application Received, Little Contact: Language(s) Spoken, Little Interview Date, Little Acceptance Date, Little Contact: Interest Finder - Sports, Little Contact: Interest Finder - Outdoors, Little Contact: Interest Finder - Arts, Little Contact: Interest Finder - Places To Go, Little Contact: Interest Finder - Hobbies, Little Contact: Interest Finder - Entertainment, Little Contact: Interest Finder - Other Interests, Little Other Interests, Little Contact: Interest Finder - Career, Little Contact: Interest Finder - Personality, Little Contact: Interest Finder - Three Wishes, Little Mailing Address Census Block Group, Big Home Census Block Group, Big Employer/School Census Block Group, Little_Age_Group, Little County, Big_Education_Level, Days_Approval_to_Acceptance, Days_Acceptance_to_Match, Days_Created_to_Approval, Days_Enrollment_to_Approval, Geographic_Distance, Geographic_Type_Interaction
 2. Check for outliers in 'Big Age' (255 potential outliers, 7.79%)
 3. Check for outliers in 'Big_Age' (251 potential outliers, 7.66%)
-4. Check for outliers in 'Gender_Compatibility_Score' (201 potential outliers, 6.14%)
-5. Check for outliers in 'Demographic_Compatibility_Score' (204 potential outliers, 6.23%)
-6. Check for outliers in 'Days_Approval_to_Acceptance' (198 potential outliers, 6.05%)
-7. Check for outliers in 'Days_Acceptance_to_Match' (196 potential outliers, 5.98%)
-8. Check for outliers in 'Has_Approval_Date' (291 potential outliers, 8.89%)
+4. Check for outliers in 'Age_Compatibility_Score' (225 potential outliers, 6.87%)
+5. Check for outliers in 'Gender_Compatibility_Score' (201 potential outliers, 6.14%)
+6. Check for outliers in 'Demographic_Compatibility_Score' (204 potential outliers, 6.23%)
+7. Check for outliers in 'Days_Approval_to_Acceptance' (198 potential outliers, 6.05%)
+8. Check for outliers in 'Days_Acceptance_to_Match' (196 potential outliers, 5.98%)
+9. Check for outliers in 'Has_Approval_Date' (291 potential outliers, 8.89%)
+10. Check for outliers in 'Age_Difference' (256 potential outliers, 7.82%)
 
 ================================================================================
 Analysis complete!
