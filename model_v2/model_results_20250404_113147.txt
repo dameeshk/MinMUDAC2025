@@ -1,0 +1,68 @@
+Match Length Prediction Model Results
+===================================
+Analysis timestamp: 2025-04-04 11:31:47
+
+Dataset Information:
+------------------
+Total samples: 3275
+Original features: 98
+
+Preprocessing Information:
+------------------------
+Final feature count: 250
+Target variable: Match Length
+
+Model Training Information:
+-------------------------
+Training samples: 2620
+Testing samples: 655
+Test size: 20%
+
+
+--------------------------------------------------------------------------------
+Training RandomForest...
+Timestamp: 2025-04-04 11:31:55
+--------------------------------------------------------------------------------
+
+
+RandomForest Results:
+----------------
+Mean Squared Error: 281.20
+Root Mean Squared Error: 16.77
+R2 Score: 0.28
+
+Top 20 most important features:
+                                      feature  importance
+21                     Program_Maturity_Years    0.150775
+22          Program_Maturity_Type_Interaction    0.082920
+24                       Age_Type_Interaction    0.066976
+6                                  Little_Age    0.031853
+20                         Time_of_Year_Score    0.031835
+16                        Geographic_Distance    0.031206
+5                                     Big_Age    0.030665
+23                Geographic_Type_Interaction    0.029535
+4                 Big Home Census Block Group    0.025164
+29                        Big Birthdate_Month    0.024241
+47                     Little Birthdate_Month    0.022958
+3   Little Mailing Address Census Block Group    0.022091
+7                     Age_Compatibility_Score    0.021635
+19                     Activation_Day_of_Week    0.017556
+30                 Match Activation Date_Year    0.016051
+18                             Age_Difference    0.015570
+27                    Big Approved Date_Month    0.013498
+28                         Big Birthdate_Year    0.009711
+26                     Big Approved Date_Year    0.006966
+1            Big Days Interview to Acceptance    0.006413
+
+
+--------------------------------------------------------------------------------
+Training XGBoost...
+Timestamp: 2025-04-04 11:31:56
+--------------------------------------------------------------------------------
+
+
+XGBoost Results:
+----------------
+Mean Squared Error: 272.07
+Root Mean Squared Error: 16.49
+R2 Score: 0.31

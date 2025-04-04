@@ -179,6 +179,14 @@ def fill_missing_geographic_data(df, report_file=None):
                     df.at[idx, 'Big County'] = block_group_to_county[bg]
                     break
     
+    # Create and fill Little County column
+    df['Little County'] = None
+    for idx, row in df.iterrows():
+        if pd.notna(row['Little Mailing Address Census Block Group']):
+            county = get_county_from_block_group(row['Little Mailing Address Census Block Group'])
+            if county:
+                df.at[idx, 'Little County'] = county
+    
     # Fill race/ethnicity data with confidence threshold
     confidence_threshold = 0.8
     
@@ -215,7 +223,8 @@ def fill_missing_geographic_data(df, report_file=None):
     final_missing = {
         'Big_County': df['Big County'].isna().sum(),
         'Big_Race_Ethnicity': df['Big Race/Ethnicity'].isna().sum(),
-        'Little_Race_Ethnicity': df['Little Participant: Race/Ethnicity'].isna().sum()
+        'Little_Race_Ethnicity': df['Little Participant: Race/Ethnicity'].isna().sum(),
+        'Little_County': df['Little County'].isna().sum()
     }
     
     # Report improvements
@@ -224,6 +233,7 @@ def fill_missing_geographic_data(df, report_file=None):
         for field in initial_missing:
             improvement = initial_missing[field] - final_missing[field]
             report_file.write(f"{field}: {improvement} missing values filled\n")
+        report_file.write(f"Little_County: {final_missing['Little_County']} missing values\n")
     
     return df
 
@@ -436,6 +446,104 @@ def create_process_efficiency_features(df, report_file=None):
     
     return df
 
+def enhance_important_features(df, report_file=None):
+    """Enhance important features with additional derived features"""
+    if report_file:
+        report_file.write("\nEnhancing Important Features\n")
+        report_file.write("===========================\n\n")
+    
+    # Track initial shape
+    initial_columns = len(df.columns)
+    
+    # 1. Geographic Features (must come first for interactions)
+    if report_file:
+        report_file.write("1. Geographic Features\n")
+        report_file.write("----------------------\n")
+    
+    # Calculate distance between Big and Little locations
+    # Using Census Block Group as a proxy for location
+    df['Geographic_Distance'] = abs(df['Big Home Census Block Group'] - df['Little Mailing Address Census Block Group'])
+    
+    # Create urban/rural classification based on Census Block Group
+    # This is a simplified version - in practice, you'd want to use actual census data
+    df['Urban_Rural_Score'] = df['Big Home Census Block Group'].apply(
+        lambda x: 1 if x > 270000000000 else 0.5 if x > 27000000000 else 0
+    )
+    
+    # 2. Age-Related Features
+    if report_file:
+        report_file.write("\n2. Age-Related Features\n")
+        report_file.write("----------------------\n")
+    
+    # Calculate age difference
+    df['Age_Difference'] = df['Big_Age'] - df['Little_Age']
+    
+    # Create age compatibility score (0-1)
+    ideal_age_diff = 20  # Assuming ideal age difference is 20 years
+    df['Age_Compatibility_Score'] = 1 - (abs(df['Age_Difference'] - ideal_age_diff) / 40)
+    
+    # Create age group interactions (convert categorical to string first)
+    df['Age_Group_Interaction'] = df['Big_Age_Group'].astype(str) + '_' + df['Little_Age_Group'].astype(str)
+    
+    # 3. Match Activation Date Enhancements
+    if report_file:
+        report_file.write("\n3. Match Activation Date Enhancements\n")
+        report_file.write("--------------------------------\n")
+    
+    # Convert to datetime if not already
+    df['Match Activation Date'] = pd.to_datetime(df['Match Activation Date'])
+    
+    # Add season
+    df['Activation_Season'] = df['Match Activation Date'].dt.month.map({
+        12: 'Winter', 1: 'Winter', 2: 'Winter',
+        3: 'Spring', 4: 'Spring', 5: 'Spring',
+        6: 'Summer', 7: 'Summer', 8: 'Summer',
+        9: 'Fall', 10: 'Fall', 11: 'Fall'
+    })
+    
+    # Add day of week (0-6, where 0 is Monday)
+    df['Activation_Day_of_Week'] = df['Match Activation Date'].dt.dayofweek
+    
+    # Add time of year score (0-1, where 0 is January 1st)
+    df['Time_of_Year_Score'] = df['Match Activation Date'].dt.dayofyear / 365
+    
+    # Add program maturity (years since program start)
+    program_start_date = df['Match Activation Date'].min()
+    df['Program_Maturity_Years'] = (df['Match Activation Date'] - program_start_date).dt.days / 365
+    
+    # 4. Program Type Enhancements and Interactions
+    if report_file:
+        report_file.write("\n4. Program Type Enhancements and Interactions\n")
+        report_file.write("------------------------------------------\n")
+    
+    # Create program type interaction with season
+    df['Program_Season_Interaction'] = df['Program Type'] + '_' + df['Activation_Season']
+    
+    # Create interaction features with Program Type
+    df['Program_Maturity_Type_Interaction'] = df['Program_Maturity_Years'] * (df['Program Type'] == 'Community').astype(int)
+    df['Geographic_Type_Interaction'] = df['Geographic_Distance'] * (df['Program Type'] == 'Community').astype(int)
+    df['Age_Type_Interaction'] = df['Age_Difference'] * (df['Program Type'] == 'Community').astype(int)
+    
+    # Report new features
+    if report_file:
+        report_file.write("\nNew Features Created:\n")
+        report_file.write("--------------------\n")
+        new_features = [
+            'Geographic_Distance', 'Urban_Rural_Score',
+            'Age_Difference', 'Age_Compatibility_Score', 'Age_Group_Interaction',
+            'Activation_Season', 'Activation_Day_of_Week', 'Time_of_Year_Score',
+            'Program_Maturity_Years', 'Program_Season_Interaction',
+            'Program_Maturity_Type_Interaction', 'Geographic_Type_Interaction',
+            'Age_Type_Interaction'
+        ]
+        for feature in new_features:
+            report_file.write(f"- {feature}\n")
+        
+        report_file.write(f"\nTotal new features added: {len(new_features)}\n")
+        report_file.write(f"Total columns in dataset: {len(df.columns)}\n")
+    
+    return df
+
 def main():
     print("===== COMPREHENSIVE DATA PREPROCESSING PIPELINE =====")
     
@@ -510,6 +618,15 @@ def main():
         
         # Create process efficiency features
         df = create_process_efficiency_features(df, report_file)
+        
+        # Step 7: Enhance Important Features
+        report_file.write("\nStep 7: Enhancing Important Features\n")
+        report_file.write("==================================\n\n")
+        print("\nStep 7: Enhancing Important Features")
+        print("==================================")
+        
+        # Enhance important features
+        df = enhance_important_features(df, report_file)
         
         # Final Summary
         report_file.write("\nFinal Data Quality Summary\n")
