@@ -15,6 +15,11 @@ project_root = os.path.dirname(script_dir)
 ENHANCED_DATA_PATH = os.path.join(script_dir, 'enhanced_data.xlsx')
 REPORT_PATH = os.path.join(script_dir, 'comprehensive_data_cleaning_report.txt')
 
+# Update this line to use the Mac file path
+excel_path = '/Users/dameesh/Desktop/MinMUDAC2025/Data/Novice.xlsx'
+# Or use this more flexible approach:
+# excel_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'MinMUDAC2025', 'Data', 'Novice.xlsx')
+
 def clean_column_name(col_name):
     """Clean column name by removing special characters and replacing spaces with underscores"""
     cleaned = re.sub(r'[^a-zA-Z0-9]', '_', col_name)
@@ -560,7 +565,6 @@ def main():
         print("==========================")
         
         # Read the Excel file using an absolute path
-        excel_path = os.path.join(project_root, 'Data', 'Novice.xlsx')
         print(f"Reading dataset: {excel_path}")
         report_file.write(f"Reading dataset: {excel_path}\n")
         

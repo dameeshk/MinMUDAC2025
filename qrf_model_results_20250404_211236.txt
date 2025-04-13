@@ -1,0 +1,132 @@
+Match Length Prediction with Cluster-Specific Quantile Regression Forests
+==============================================================
+Analysis timestamp: 2025-04-04 21:12:36
+
+Dataset Information:
+------------------
+Total samples: 3275
+Original features: 98
+
+Preprocessing Information:
+------------------------
+Processed feature count: 5147
+Target variable: Match Length
+
+
+--------------------------------------------------------------------------------
+Clustering Data into 4 Match Profiles
+Timestamp: 2025-04-04 21:12:37
+--------------------------------------------------------------------------------
+
+Cluster Analysis:
+-----------------
+
+                                 Cluster 0     Cluster 1     Cluster 2      Cluster 3
+Program Type_Community        1.000000e+00  7.864078e-01  6.169154e-01       0.000000
+Program_Maturity_Years        3.348341e+00  3.750813e+00  3.371785e+00       2.400308
+Age_Difference                1.714203e+01  4.041412e+01  2.000368e+01      12.936767
+Gender_Match                  1.000000e+00  1.000000e+00  0.000000e+00       1.000000
+Race_Ethnicity_Match          0.000000e+00  0.000000e+00  0.000000e+00       0.000000
+Big_Age                       3.305357e+01  5.589479e+01  3.581075e+01      29.007734
+Little_Age                    1.591154e+01  1.548066e+01  1.580707e+01      16.070967
+Demographic_Similarity_Score  5.000000e-01  5.000000e-01  0.000000e+00       0.500000
+Geographic_Distance           2.326859e+09  6.954777e+08  9.294292e+08  783930.500000
+Same_County                   6.023268e-01  4.349515e-01  3.283582e-01       0.000000
+Same_Census_Block             2.115283e-03  3.883495e-03  4.975124e-03       0.000000
+Time_of_Year_Score            4.935795e-01  5.092805e-01  5.582498e-01       0.583209
+Activation_Day_of_Week        2.123744e+00  1.906796e+00  2.034826e+00       2.196108
+Size                          1.891000e+03  5.150000e+02  2.010000e+02     668.000000
+Proportion                    5.774046e-01  1.572519e-01  6.137405e-02       0.203969
+Average Match Length          2.615119e+01  2.441767e+01  2.187512e+01      15.206737
+
+Cluster Descriptions:
+--------------------
+
+Cluster 0:
+- Size: 1891 matches (57.7% of total)
+- Average Match Length: 26.2 months
+- Key characteristics:
+  * Geographic_Distance: 2326858764.78
+  * Big_Age: 33.05
+  * Age_Difference: 17.14
+
+Cluster 1:
+- Size: 515 matches (15.7% of total)
+- Average Match Length: 24.4 months
+- Key characteristics:
+  * Geographic_Distance: 695477688.75
+  * Big_Age: 55.89
+  * Age_Difference: 40.41
+
+Cluster 2:
+- Size: 201 matches (6.1% of total)
+- Average Match Length: 21.9 months
+- Key characteristics:
+  * Geographic_Distance: 929429201.73
+  * Big_Age: 35.81
+  * Age_Difference: 20.00
+
+Cluster 3:
+- Size: 668 matches (20.4% of total)
+- Average Match Length: 15.2 months
+- Key characteristics:
+  * Geographic_Distance: 783930.50
+  * Big_Age: 29.01
+  * Little_Age: 16.07
+
+
+--------------------------------------------------------------------------------
+Evaluating Cluster-Specific Quantile Regression Forests
+Timestamp: 2025-04-04 21:12:38
+--------------------------------------------------------------------------------
+
+
+Cluster-Specific Quantile Regression Forest Results:
+--------------------------------------------------
+Mean Squared Error: 41.61
+Root Mean Squared Error: 6.45
+R2 Score: 0.89
+80% Prediction Interval Coverage: 1.000 (ideal: 0.800)
+50% Prediction Interval Coverage: 1.000 (ideal: 0.500)
+80% Prediction Interval Width: 23.20 months
+50% Prediction Interval Width: 6.26 months
+Cluster-specific predictions: 655/655 (100.0%)
+Fallback predictions: 0/655 (0.0%)
+
+Performance by Match Length Category:
+---------------------------------
+
+              Mean Absolute Error  Interval Coverage  Interval Width  Count
+length_bin                                                                 
+0-6 months               4.806858                1.0       18.522059     68
+6-12 months              3.229081                1.0       14.743063    160
+12-24 months             2.764831                1.0       17.586339    183
+24-36 months             2.712975                1.0       22.551132    106
+36+ months               9.723934                1.0       43.418102    137
+
+
+Top 20 Feature Importance:
+--------------------------
+
+                                      feature  importance
+30          Program_Maturity_Type_Interaction    0.106179
+29                     Program_Maturity_Years    0.097099
+8                                     Big_Age    0.038332
+28                         Time_of_Year_Score    0.034025
+31                Geographic_Type_Interaction    0.031582
+24                        Geographic_Distance    0.030033
+7                 Big Home Census Block Group    0.028353
+9                                  Little_Age    0.028000
+42                        Big Birthdate_Month    0.026645
+6   Little Mailing Address Census Block Group    0.023887
+10                    Age_Compatibility_Score    0.021791
+62                     Little Birthdate_Month    0.021408
+27                     Activation_Day_of_Week    0.013838
+40                    Big Approved Date_Month    0.013170
+26                             Age_Difference    0.012601
+32                       Age_Type_Interaction    0.012519
+41                         Big Birthdate_Year    0.007853
+1            Big Days Interview to Acceptance    0.007421
+44                Match Activation Date_Month    0.005844
+39                     Big Approved Date_Year    0.005008
+

@@ -1,11 +1,11 @@
 Comprehensive Data Cleaning and Imputation Report
-Date: 2025-04-03 20:40:35
+Date: 2025-04-04 17:04:24
 ================================================================================
 
 Step 1: Initial Data Loading
 ==========================
 
-Reading dataset: C:\Users\solo\Desktop\Repos\MinMUDAC2025\Data\Novice.xlsx
+Reading dataset: /Users/dameesh/Desktop/MinMUDAC2025/Data/Novice.xlsx
 Dataset shape: (3275, 66)
 
 Initial Missing Data:
@@ -204,4 +204,4 @@ Initial missing values: 118097 (54.64%)
 Final missing values: 132574 (61.33%)
 Total cells filled: -14477 (-12.26% of initial missing)
 
-Processed dataset saved to: C:\Users\solo\Desktop\Repos\MinMUDAC2025\model_v2\enhanced_data.xlsx
+Processed dataset saved to: /Users/dameesh/Desktop/MinMUDAC2025/model_v2/enhanced_data.xlsx

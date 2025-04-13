@@ -1,0 +1,202 @@
+Comprehensive Data Cleaning and Imputation Report
+Date: 2025-04-04 21:09:35
+================================================================================
+
+Step 1: Initial Data Loading
+==========================
+
+Reading dataset: /Users/dameesh/Desktop/MinMUDAC2025/Data/Test-Truncated-Restated-Consolidated.xlsx
+Dataset shape: (300, 63)
+
+Initial Missing Data:
+Total missing values: 11019 (58.30%)
+
+
+Step 2: Age Feature Processing
+============================
+
+
+Age Feature Processing:
+--------------------------------------------------
+
+Age Feature Improvements:
+Big_Birthdate: 0 missing values
+Little_Birthdate: 0 missing values
+Big_Age: 0 missing values after processing
+Little_Age: 0 missing values after processing
+
+New Age Features Created:
+  - Big_Age: Calculated age of Big
+  - Little_Age: Calculated age of Little
+  - Big_Age_Group: Age group category for Big
+  - Little_Age_Group: Age group category for Little
+  - Age_Compatibility_Score: Score indicating age compatibility
+
+Step 3: Geographic Data Processing
+================================
+
+
+Geographic Data Imputation:
+--------------------------------------------------
+
+Geographic Data Improvements:
+Big_County: 1 missing values filled
+Big_Race_Ethnicity: 0 missing values filled
+Little_Race_Ethnicity: 0 missing values filled
+Little_County: 92 missing values
+
+Step 4: Occupation Data Processing
+================================
+
+
+Occupation Data Processing:
+--------------------------------------------------
+
+Occupation Data Improvements:
+Big_Occupation: 1 missing values filled
+Big_Education: 0 missing values filled
+
+New Occupation Features Created:
+  - Big_Occupation_Category: Categorized occupation type
+  - Big_Education_Level: Numeric representation of education level
+
+Step 5: Creating Demographic Compatibility Features
+=================================================
+
+
+Demographic Compatibility Features:
+--------------------------------------------------
+
+Demographic Compatibility Features Created:
+  - Gender_Compatibility_Score: Binary score for gender match
+  - Race_Ethnicity_Compatibility_Score: Binary score for race/ethnicity match
+  - Language_Compatibility_Score: Binary score for language match
+  - Demographic_Compatibility_Score: Overall demographic compatibility score
+
+Step 6: Creating Process Efficiency Features
+==========================================
+
+
+Process Efficiency Features:
+--------------------------------------------------
+
+Process Efficiency Features Created:
+  - Days_Approval_to_Acceptance: Time between approval and acceptance
+  - Days_Acceptance_to_Match: Time between acceptance and match
+  - Has_Approval_Date: Binary indicator for approval date presence
+  - Has_Acceptance_Date: Binary indicator for acceptance date presence
+  - Has_Match_Date: Binary indicator for match date presence
+  - Volunteer_Readiness_Score: Overall readiness score
+  - Days_Created_to_Approval: Time from creation to approval
+  - Days_Enrollment_to_Approval: Time from enrollment to approval
+
+Step 7: Enhancing Important Features
+==================================
+
+
+Enhancing Important Features
+===========================
+
+1. Geographic Features
+----------------------
+
+2. Age-Related Features
+----------------------
+
+3. Match Activation Date Enhancements
+--------------------------------
+
+4. Program Type Enhancements and Interactions
+------------------------------------------
+
+New Features Created:
+--------------------
+- Geographic_Distance
+- Urban_Rural_Score
+- Age_Difference
+- Age_Compatibility_Score
+- Age_Group_Interaction
+- Activation_Season
+- Activation_Day_of_Week
+- Time_of_Year_Score
+- Program_Maturity_Years
+- Program_Season_Interaction
+- Program_Maturity_Type_Interaction
+- Geographic_Type_Interaction
+- Age_Type_Interaction
+
+Total new features added: 13
+Total columns in dataset: 95
+
+Final Data Quality Summary
+========================
+
+Missing Values by Column:
+----------------------
+Big County: 77 missing (25.67%)
+Big Occupation: 46 missing (15.33%)
+Big: Military: 225 missing (75.00%)
+Big Approved Date: 27 missing (9.00%)
+Big Level of Education: 247 missing (82.33%)
+Big Languages: 117 missing (39.00%)
+Big Employer: 71 missing (23.67%)
+Big Race/Ethnicity: 5 missing (1.67%)
+Rationale for Match: 27 missing (9.00%)
+Big Enrollment: Record Type: 210 missing (70.00%)
+Big Assessment Uploaded: 210 missing (70.00%)
+Big Acceptance Date: 210 missing (70.00%)
+Big Car Access: 282 missing (94.00%)
+Big Days Acceptance to Match: 260 missing (86.67%)
+Big Days Interview to Acceptance: 210 missing (70.00%)
+Big Days Interview to Match: 260 missing (86.67%)
+Big Open to Cross-Gender Match: 295 missing (98.33%)
+Big Re-Enroll: 210 missing (70.00%)
+Big Contact: Preferred Communication Type: 299 missing (99.67%)
+Big Contact: Former Big/Little: 299 missing (99.67%)
+Big Contact: Interest Finder - Sports: 296 missing (98.67%)
+Big Contact: Interest Finder - Places To Go: 296 missing (98.67%)
+Big Contact: Interest Finder - Hobbies: 296 missing (98.67%)
+Big Contact: Interest Finder - Entertainment: 296 missing (98.67%)
+Big Contact: Created Date: 210 missing (70.00%)
+Big Enrollment: Created Date: 210 missing (70.00%)
+Big Contact: Volunteer Availability: 285 missing (95.00%)
+Big Contact: Marital Status: 217 missing (72.33%)
+Little RTBM Date in MF: 295 missing (98.33%)
+Little RTBM in Matchforce: 205 missing (68.33%)
+Little Moved to RTBM in MF: 205 missing (68.33%)
+Little Application Received: 205 missing (68.33%)
+Little Contact: Language(s) Spoken: 299 missing (99.67%)
+Little Interview Date: 207 missing (69.00%)
+Little Acceptance Date: 207 missing (69.00%)
+Little Contact: Interest Finder - Sports: 293 missing (97.67%)
+Little Contact: Interest Finder - Outdoors: 293 missing (97.67%)
+Little Contact: Interest Finder - Arts: 293 missing (97.67%)
+Little Contact: Interest Finder - Places To Go: 293 missing (97.67%)
+Little Contact: Interest Finder - Hobbies: 293 missing (97.67%)
+Little Contact: Interest Finder - Entertainment: 293 missing (97.67%)
+Little Contact: Interest Finder - Other Interests: 298 missing (99.33%)
+Little Other Interests: 278 missing (92.67%)
+Little Contact: Interest Finder - Career: 293 missing (97.67%)
+Little Contact: Interest Finder - Personality: 293 missing (97.67%)
+Little Contact: Interest Finder - Three Wishes: 293 missing (97.67%)
+Little Participant: Race/Ethnicity: 11 missing (3.67%)
+Little Mailing Address Census Block Group: 92 missing (30.67%)
+Big Home Census Block Group: 99 missing (33.00%)
+Big Employer/School Census Block Group: 286 missing (95.33%)
+Little_Age_Group: 87 missing (29.00%)
+Little County: 92 missing (30.67%)
+Big_Education_Level: 292 missing (97.33%)
+Days_Approval_to_Acceptance: 211 missing (70.33%)
+Days_Acceptance_to_Match: 210 missing (70.00%)
+Days_Created_to_Approval: 211 missing (70.33%)
+Days_Enrollment_to_Approval: 211 missing (70.33%)
+Geographic_Distance: 102 missing (34.00%)
+Geographic_Type_Interaction: 102 missing (34.00%)
+
+Overall Statistics:
+-----------------
+Initial missing values: 11019 (58.30%)
+Final missing values: 12535 (66.32%)
+Total cells filled: -1516 (-13.76% of initial missing)
+
+Processed dataset saved to: /Users/dameesh/Desktop/MinMUDAC2025/submission/enhanced_test_data.xlsx
